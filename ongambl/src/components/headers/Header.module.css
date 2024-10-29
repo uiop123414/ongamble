@@ -1,0 +1,50 @@
+.header {
+  display: flex;
+  flex-direction: row;
+  margin: 22px 40px;
+}
+
+.header h1 a {
+  font-size: 2.25rem;
+  cursor: pointer;
+  text-decoration: none;
+  color: black;
+}
+
+.header .header-btns {
+  margin: 8px 0px 8px 0px;
+  font-size: 1.5rem;
+  margin-left: auto;
+  align-items: center;
+}
+
+.header-btns {
+  display: flex;
+  gap: 80px;
+  font-weight: 500;
+}
+.header-btns a {
+  text-decoration: none;
+  color: black;
+}
+
+div a.header-log-in {
+  color: #e1083b;
+  border: 1px solid #e1083b;
+  border-radius: 100px;
+  padding: 11px 24px;
+}
+
+.header-log-in-logged-in {
+  /* Loged in */
+  border: 1px solid #e1083b;
+  border-radius: 50%;
+  width: 58px;
+  height: 58px;
+}
+
+.header-log-in-logged-in img {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+}

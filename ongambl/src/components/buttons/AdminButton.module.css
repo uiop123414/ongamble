@@ -1,0 +1,41 @@
+.admin-btn {
+  box-sizing: border-box;
+
+  /* Auto layout */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 12px;
+  gap: 10px;
+
+  width: 200px;
+  height: 62px;
+  /* Background/White */
+  background: #f9f9f9;
+  /* Typography/Prmary */
+  border: 1px solid #161616;
+  border-radius: 8px;
+}
+
+.admin-btn a {
+  /* Change data */
+
+  font-style: normal;
+  font-weight: 400;
+  font-size: 28px;
+  line-height: 42px;
+
+  /* Typography/Prmary */
+  color: #161616;
+}
+
+.btn-active {
+  border: 0px;
+  background: #e1083b;
+  /* Background/White */
+  color: #f9f9f9;
+}
+
+.btn-active a {
+  color: #f9f9f9;
+}

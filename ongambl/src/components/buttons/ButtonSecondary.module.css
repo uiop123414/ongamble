@@ -1,0 +1,19 @@
+.secondary-btn {
+  /* Rest password btn */
+
+  /* Auto layout */
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding: 12px;
+  font-size: 28px;
+  /* Typography/Prmary */
+  border: 1px solid #161616;
+  border-radius: 100px;
+  color: #000;
+}
+
+.secondary-btn a {
+  text-decoration: none;
+}

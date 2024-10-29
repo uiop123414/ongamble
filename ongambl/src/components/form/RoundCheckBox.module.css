@@ -1,0 +1,56 @@
+.round-check-box-disable {
+  width: 60px;
+  height: 60px;
+
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 6px 21px;
+  gap: 10px;
+
+  /* Typography/Secondary */
+  border: 1px solid #b3b3b3;
+  border-radius: 30px;
+  cursor: pointer;
+}
+
+.round-check-box-active {
+  width: 60px;
+  height: 60px;
+
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 6px 21px;
+  gap: 10px;
+
+  /* Typography/Secondary */
+  border: 1px solid #e1083b;
+  border-radius: 30px;
+  cursor: pointer;
+}
+
+.form-label {
+  font-weight: 500;
+  font-size: 28px;
+  line-height: 42px;
+  font-size: 1.75em;
+}
+
+.text-input {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.inside-check-box-active {
+  width: 36px;
+  height: 36px;
+
+  background: #e1083b;
+  border-radius: 50%;
+}

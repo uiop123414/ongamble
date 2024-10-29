@@ -1,0 +1,20 @@
+.article-content {
+  margin-left: 190px;
+  margin-right: 190px;
+  margin-top: 40px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.article-content * {
+  margin: 0px;
+}
+.article-content .user-content {
+  display: flex;
+}
+.article-content .text-content {
+  display: flex;
+  flex-direction: column;
+}

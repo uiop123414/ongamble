@@ -1,0 +1,26 @@
+.search-panel {
+  display: flex;
+  gap: 40px;
+  align-items: center;
+  margin-left: 40px;
+  margin-top: 60px;
+}
+
+.search-panel h2 {
+  font-size: 36px;
+}
+
+.cards {
+  display: grid;
+  grid-template-rows: repeat(3, 1fr);
+  grid-template-columns: repeat(3, 1fr);
+  margin: 40px 40px 148px 40px;
+  content: normal;
+  gap: auto;
+  justify-items: center;
+}
+
+.pagination {
+  margin-bottom: 100px;
+  justify-items: center;
+}

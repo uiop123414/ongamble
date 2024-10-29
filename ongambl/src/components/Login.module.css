@@ -1,0 +1,39 @@
+.header {
+  font-style: normal;
+  font-weight: 700;
+  font-size: 68px;
+  line-height: 102px;
+  margin-top: 0px;
+  margin-bottom: 0px;
+}
+
+.login {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 0px;
+  gap: 40px;
+  margin-left: 80px;
+  margin-top: 140px;
+  margin-bottom: 40px;
+}
+form {
+  display: flex;
+  flex-direction: column;
+}
+.login p {
+  font-style: normal;
+  font-weight: 400;
+  font-size: 1.5em;
+  line-height: 36px;
+
+  margin-bottom: 0px;
+  margin-top: 0px;
+}
+
+.login p a {
+  font-weight: 700;
+  color: #000000;
+  text-decoration: underline;
+}

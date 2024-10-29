@@ -1,0 +1,31 @@
+body {
+  overflow-x: hidden;
+}
+
+.main {
+  display: flex;
+}
+.left-side {
+  margin-left: 40px;
+  margin-top: 60px;
+  margin-right: 80px;
+  display: flex;
+  gap: 40px;
+  flex-direction: column;
+}
+.main h2 {
+  font-size: 6rem;
+  font-weight: 500;
+  line-height: 9rem;
+  margin-top: 0px;
+  margin-bottom: 0px;
+}
+
+.main h2 span {
+  color: #e1083b;
+}
+
+.photo {
+  object-fit: fill;
+  width: 60%;
+}

@@ -1,0 +1,31 @@
+.entity {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 35px 24px;
+  gap: 10px;
+
+  background: #f9f9f9;
+  border: 1px solid #161616;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+  border-radius: 32px;
+}
+
+.entity a svg {
+  color: #161616;
+
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.entity .trash {
+  color: #e1083b;
+}
+
+.activated-true {
+  color: #41bc41;
+}
+
+.activated-false {
+  color: #e1083b;
+}

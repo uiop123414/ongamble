@@ -1,0 +1,48 @@
+.footer {
+  background-color: #fbfbfb;
+  padding: 28px 40px 112px 40px;
+  color: #b3b3b3;
+  border-top: 1px solid #b3b3b3;
+  display: flex;
+  font-weight: 500;
+}
+
+.footer-btns {
+  display: flex;
+  flex-direction: column;
+  margin-left: auto;
+  align-items: end;
+  gap: 28px;
+}
+
+.footer-btns a {
+  font-size: 1.5rem;
+}
+
+.footer-left {
+  display: flex;
+  gap: 82px;
+  align-items: center;
+  justify-self: flex-start;
+}
+
+.lang {
+  border: 1px solid #b3b3b3;
+  height: 22px;
+  border-radius: 100px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding-right: 8px;
+  cursor: pointer;
+}
+.lang p {
+  font-size: 1rem;
+  color: #000000;
+}
+
+.lang img {
+  height: 22px;
+  width: 22px;
+  border-radius: 50%;
+}
