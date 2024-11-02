@@ -20,6 +20,9 @@ type Token struct {
 	UserID    int64     `json:"-"`
 	Expiry    time.Time `json:"expiry"`
 	Scope     string    `json:"-"`
+	Version   int       `json:"-"`
+	CreatedAt time.Time `json:"-"`
+	UpdatedAt time.Time `json:"-"`
 }
 
 func GenerateToken(userID int64, ttl time.Duration, scope string) (*Token, error) {

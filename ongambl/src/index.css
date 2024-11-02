@@ -2,8 +2,6 @@ body {
   margin: 0;
   font-family: "Poppins", sans-serif;
   background-color: #f9f9f9;
-  /* overflow: hidden; Hide scrollbars */
-  /* zoom: 67%; */
   color: #000;
 }
 a {

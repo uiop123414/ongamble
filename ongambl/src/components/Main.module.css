@@ -29,3 +29,25 @@ body {
   object-fit: fill;
   width: 60%;
 }
+
+@media (max-width: 480px) {
+  .photo {
+    display: none;
+  }
+  .left-side {
+    margin-left: 20px;
+    margin-top: 40px;
+    margin-right: 40px;
+    margin-bottom: 40px;
+    display: flex;
+    gap: 40px;
+    flex-direction: column;
+  }
+  .main h2 {
+    font-size: 6rem;
+    font-weight: 500;
+    line-height: 7rem;
+    margin-top: 0px;
+    margin-bottom: 0px;
+  }
+}

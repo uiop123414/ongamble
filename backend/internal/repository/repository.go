@@ -15,4 +15,6 @@ type DatabaseRepo interface {
 	InsertToken(token *models.Token) error
 	DeleteAllTokensForUser(scope string, userID int64) error
 	GetUserByToken(tokenScope, tokenPlainText string) (*models.User, error)
+	NewArticle(article *models.Article) error
+	GetArticle(id int) (*models.Article, error)
 }

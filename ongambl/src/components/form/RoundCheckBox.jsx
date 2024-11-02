@@ -2,7 +2,7 @@ import styles from "./RoundCheckBox.module.css";
 
 const RoundCheckBox = (props) => {
   return (
-    <div className={styles["text-input"]}>
+    <div className={styles["text-input"]} onClick={props.onClick}>
       <label htmlFor={props.name} className={styles["form-label"]}>
         {props.title}
       </label>

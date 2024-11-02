@@ -16,14 +16,8 @@
 }
 
 .add-info {
-  /* Frame 24 */
-
-  /* Auto layout */
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  align-items: flex-start;
-  align-content: flex-start;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   padding: 0px;
   gap: 40px;
   margin-top: 48px;
@@ -34,4 +28,6 @@
   flex-direction: column;
   margin-left: 120px;
   margin-right: 120px;
+  gap: 120px;
+  margin-bottom: 120px;
 }

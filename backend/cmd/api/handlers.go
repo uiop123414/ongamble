@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
@@ -9,6 +10,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/go-chi/chi/v5"
 	"github.com/golang-jwt/jwt/v4"
 )
 
@@ -140,9 +142,9 @@ func (app *application) GetUserData(w http.ResponseWriter, r *http.Request) {
 	}
 
 	payload := JSONResponse{
-		Error: false,
+		Error:   false,
 		Message: "User Data",
-		Data: user,
+		Data:    user,
 	}
 
 	app.writeJSON(w, http.StatusOK, payload)
@@ -186,18 +188,17 @@ func (app *application) RefreshToken(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 
-
 			err = app.DB.DeleteAllTokensForUser(models.ScopeAuthentication, int64(user.ID))
 			if err != nil {
 				app.errorJSON(w, errors.New("server error"), http.StatusUnauthorized)
 				return
 			}
-			
+
 			tk := models.Token{
-				Hash:  []byte(tokenPairs.Token),
+				Hash:   []byte(tokenPairs.Token),
 				UserID: user.ID,
 				Expiry: time.Now().Add(app.auth.TokenExpiry),
-				Scope: models.ScopeAuthentication,
+				Scope:  models.ScopeAuthentication,
 			}
 
 			err = app.DB.InsertToken(&tk)
@@ -217,4 +218,73 @@ func (app *application) RefreshToken(w http.ResponseWriter, r *http.Request) {
 
 func (app *application) Logout(w http.ResponseWriter, r *http.Request) {
 
+}
+func (app *application) CreateNewArticle(w http.ResponseWriter, r *http.Request) {
+	var input struct {
+		ArticleName string        `json:"articleName"`
+		Username    string        `json:"username"`
+		Time        string        `json:"time"`
+		Blocks      []interface{} `json:"blocks"`
+		Publish     bool          `json:"publish"`
+		Version     string        `json:"version"`
+	}
+
+	err := app.readJSON(w, r, &input)
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+
+	htmlList, err := json.Marshal(input.Blocks)
+	if err != nil {
+		fmt.Println("Error marshaling Blocks:", err)
+		return
+	}
+
+	blocksString := string(htmlList)
+
+	article := models.Article{
+		Name:        input.ArticleName,
+		Username:    input.Username,
+		ReadingTime: input.Time,
+		HtmlList:    blocksString,
+		Publish:     input.Publish,
+	}
+
+	err = app.DB.NewArticle(&article)
+	fmt.Println(err)
+	payload := JSONResponse{
+		Error:   false,
+		Message: "Article susscefully created",
+	}
+
+	if err != nil {
+		payload.Error = true
+		payload.Message = err.Error()
+		app.writeJSON(w, http.StatusBadRequest, payload)
+	}
+
+	app.writeJSON(w, http.StatusOK, payload)
+
+}
+
+func (app *application) GetArticle(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+
+	article, err := app.DB.GetArticle(id)
+	if err != nil {
+		app.errorJSON(w, err, http.StatusBadRequest)
+	}
+
+	payload := JSONResponse{
+		Error:   false,
+		Message: fmt.Sprintf("Article №%d", id),
+		Data:    article,
+	}
+
+	app.writeJSON(w, http.StatusOK, payload)
 }

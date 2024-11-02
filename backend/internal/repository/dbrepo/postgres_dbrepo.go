@@ -145,7 +145,6 @@ func (m *PostgresDBRepo) DeleteAllTokensForUser(scope string, userID int64) erro
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
-
 	query := `DELETE FROM tokens
 			  WHERE scope = $1 AND user_id = $2`
 
@@ -155,7 +154,7 @@ func (m *PostgresDBRepo) DeleteAllTokensForUser(scope string, userID int64) erro
 }
 
 func (m *PostgresDBRepo) GetUserByToken(tokenScope, tokenPlainText string) (*models.User, error) {
-	
+
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
@@ -193,4 +192,48 @@ func (m *PostgresDBRepo) GetUserByToken(tokenScope, tokenPlainText string) (*mod
 	}
 
 	return &user, nil
+}
+
+func (m *PostgresDBRepo) NewArticle(article *models.Article) error {
+
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	query := `INSERT INTO articles (name, publish, reading_time, username, html_list)
+	VALUES ($1, $2, $3, $4, $5);`
+
+	_, err := m.DB.ExecContext(ctx, query, article.Name, article.Publish, article.ReadingTime, article.Username, article.HtmlList)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *PostgresDBRepo) GetArticle(id int) (*models.Article, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	query := `SELECT name, publish, reading_time, username, html_list, created_at, updated_at, version 
+				FROM articles
+				WHERE id = $1`
+
+	var article models.Article
+
+	err := m.DB.QueryRowContext(ctx, query, id).Scan(
+		&article.Name,
+		&article.Publish,
+		&article.ReadingTime,
+		&article.Username,
+		&article.HtmlList,
+		&article.CreatedAt,
+		&article.UpdatedAt,
+		&article.Version,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return &article, nil
 }

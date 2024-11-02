@@ -25,10 +25,16 @@ func (app *application) routes() http.Handler {
 	mux.Get("/refresh", app.RefreshToken)
 	mux.Get("/logout", app.Logout)
 
+	mux.Get("/article/{id}", app.GetArticle)
+
 	mux.Route("/user", func(r chi.Router) {
 		r.Use(app.requireAuthenticatedUser)
 
 		r.Get("/data", app.GetUserData)
+	})
+
+	mux.Route("/admin", func(r chi.Router) {
+		r.Post("/create-article", app.CreateNewArticle)
 	})
 
 	return mux

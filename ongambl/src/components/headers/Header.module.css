@@ -48,3 +48,9 @@ div a.header-log-in {
   height: 58px;
   border-radius: 50%;
 }
+
+@media (min-width: 320px) {
+  .header {
+    margin: 22px 20px;
+  }
+}

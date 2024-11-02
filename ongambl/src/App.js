@@ -115,9 +115,9 @@ function App() {
           <Route path={"/"} element={<MainLayouts />}>
             <Route index element={<Main />} />
             <Route path={"news"} element={<News />} />
-            <Route path={"games"} element={<Games />} />
+            <Route path={"games/:id"} element={<Games />} />
             <Route path={"profile"} element={<Profile />} />
-            <Route path={"article"} element={<Article />} />
+            <Route path={"article/:id"} element={<Article />} />
           </Route>
           <Route path={"/admin"} element={<AdminLayouts />}>
             <Route path={"profile"} element={<AdminProfile />} />
