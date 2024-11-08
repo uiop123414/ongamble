@@ -35,13 +35,13 @@ const Profile = () => {
           console.log("user is not logged in", error);
         });
     } else {
-      if (count !== 2) {
+      if (count !== 1) {
         setCount((count) => (count += 1));
       } else {
         navigate("/login");
       }
     }
-  }, [jwtToken, navigate]);
+  }, [jwtToken]);
   return (
     <>
       <div className={styles["profile"]}>

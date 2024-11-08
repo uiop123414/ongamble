@@ -48,7 +48,7 @@ const AdminLayouts = () => {
         navigate("/login");
       }
     }
-  }, [isAdmin]);
+  }, [navigate, isAdmin]);
 
   return (
     <>
