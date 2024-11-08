@@ -32,6 +32,7 @@ func (app *application) routes() http.Handler {
 		r.Use(app.requireAuthenticatedUser)
 
 		r.Get("/data", app.GetUserData)
+		r.Get("/check-admin", app.GetCheckAdmin)
 	})
 
 	mux.Route("/admin", func(r chi.Router) {

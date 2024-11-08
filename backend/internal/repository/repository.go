@@ -18,4 +18,5 @@ type DatabaseRepo interface {
 	NewArticle(article *models.Article) error
 	GetArticle(id int) (*models.Article, error)
 	GetNews(page int) (*[]models.News, error)
+	GetUserPermissions(token string) (*[]string, error)
 }

@@ -1,16 +1,16 @@
-import styles from "./AdminCreateNewArticle.module.css";
-import { createReactEditorJS } from "react-editor-js";
 import { useRef, useCallback, useState } from "react";
-import Input from "../form/Input";
+import { createReactEditorJS } from "react-editor-js";
+import { useSelector } from "react-redux";
+import Delimiter from "@editorjs/delimiter";
+import ImageTool from "@editorjs/image";
+import Header from "@editorjs/header";
+import List from "@editorjs/list";
+import styles from "./AdminCreateNewArticle.module.css";
+import { selectCsrfToken } from "../redux/slices/csrfTokenSlice";
 import RoundCheckBox from "../form/RoundCheckBox";
 import Button from "../buttons/Button";
 import { data } from "./data";
-import Header from "@editorjs/header";
-import List from "@editorjs/list";
-import ImageTool from "@editorjs/image";
-import Delimiter from "@editorjs/delimiter";
-import { useSelector } from "react-redux";
-import { selectCsrfToken } from "../redux/slices/csrfTokenSlice";
+import Input from "../form/Input";
 
 const AdminCreateNewArticle = () => {
   const csrfToken = useSelector(selectCsrfToken);

@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"ongambl/internal/models"
 	"ongambl/internal/validator"
+	"slices"
 	"strconv"
 	"time"
 
@@ -309,4 +310,32 @@ func (app *application) GetNews(w http.ResponseWriter, r *http.Request) {
 	}
 
 	app.writeJSON(w, http.StatusOK, payload)
+}
+
+func (app *application) GetCheckAdmin(w http.ResponseWriter, r *http.Request) {
+	token, err := app.GetAuthToken(r)
+	if err != nil {
+		app.errorJSON(w, err, http.StatusUnprocessableEntity)
+		return
+	}
+
+	permissions, err := app.DB.GetUserPermissions(token)
+	if err != nil {
+		app.errorJSON(w, err, http.StatusBadRequest)
+		return
+	}
+
+	payload := JSONResponse{
+		Error:   false,
+		Message: "User is admin",
+		Data:    true,
+	}
+
+	if slices.Contains(*permissions, models.AdminWrite){
+		app.writeJSON(w, http.StatusOK, payload)
+	} else {
+		payload.Message = "User is not admin"
+		payload.Data = false
+		app.writeJSON(w, http.StatusOK, payload)
+	}
 }

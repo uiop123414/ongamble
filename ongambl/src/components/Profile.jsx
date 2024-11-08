@@ -12,6 +12,7 @@ const Profile = () => {
   const jwtToken = useSelector(selectJwtToken);
   const navigate = useNavigate();
   const [user, setUser] = useState({});
+  const [count, setCount] = useState(0);
 
   useEffect(() => {
     if (jwtToken !== "") {
@@ -34,7 +35,11 @@ const Profile = () => {
           console.log("user is not logged in", error);
         });
     } else {
-      navigate("/login");
+      if (count !== 2) {
+        setCount((count) => (count += 1));
+      } else {
+        navigate("/login");
+      }
     }
   }, [jwtToken, navigate]);
   return (

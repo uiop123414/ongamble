@@ -259,7 +259,7 @@ func (m *PostgresDBRepo) GetNews(page int) (*[]models.News, error) {
 	for rows.Next() {
 		var news models.News
 
-		err := rows.Scan(
+		err = rows.Scan(
 			&news.ID,
 			&news.Name,
 			&news.CreatedAt,
@@ -277,4 +277,55 @@ func (m *PostgresDBRepo) GetNews(page int) (*[]models.News, error) {
 	}
 
 	return &newsArr, err
+}
+
+func (m *PostgresDBRepo) GetUserPermissions(token string) (*[]string, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	query := `  
+	SELECT 
+		code 
+	FROM 
+		permissions 
+	LEFT JOIN (
+		SELECT 
+			users_permissions.permission_id as id 
+		FROM 
+			users_permissions 
+		LEFT JOIN (
+			SELECT 
+				user_id 
+			FROM 
+				tokens 
+			WHERE 
+				hash = $1 
+				AND scope = $2
+		) as tokens ON users_permissions.user_id = tokens.user_id
+	) as tmp ON permissions.id = tmp.id`
+	
+	rows, err := m.DB.QueryContext(ctx, query, token, models.ScopeActivation)
+	if err != nil {
+		return nil, err
+	}
+
+	var permissions []string
+
+	for rows.Next() {
+		var permission string
+		err = rows.Scan(
+			&permission,
+		)
+
+		if err != nil {
+			return nil, err
+		}
+
+		permissions = append(permissions, permission)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+	
+	return &permissions, nil
 }
