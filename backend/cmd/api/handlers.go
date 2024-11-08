@@ -288,3 +288,25 @@ func (app *application) GetArticle(w http.ResponseWriter, r *http.Request) {
 
 	app.writeJSON(w, http.StatusOK, payload)
 }
+
+func (app *application) GetNews(w http.ResponseWriter, r *http.Request) {
+	page, err := strconv.Atoi(chi.URLParam(r, "page"))
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+
+	news, err := app.DB.GetNews(page)
+	if err != nil {
+		fmt.Print(news)
+		app.errorJSON(w, err, http.StatusBadRequest)
+	}
+
+	payload := JSONResponse{
+		Error:   false,
+		Message: fmt.Sprintf("News in page: %d", page),
+		Data:    news,
+	}
+
+	app.writeJSON(w, http.StatusOK, payload)
+}

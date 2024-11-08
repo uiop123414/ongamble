@@ -17,4 +17,5 @@ type DatabaseRepo interface {
 	GetUserByToken(tokenScope, tokenPlainText string) (*models.User, error)
 	NewArticle(article *models.Article) error
 	GetArticle(id int) (*models.Article, error)
+	GetNews(page int) (*[]models.News, error)
 }

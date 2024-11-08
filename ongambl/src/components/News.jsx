@@ -1,31 +1,54 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import styles from "./News.module.css";
 import Card from "./Card";
 import Paginator from "./paginator/Paginator";
 import Search from "./form/Search";
 const News = () => {
-  return (
-    <>
-      <div className={styles["search-panel"]}>
-        <h2>News</h2>
-        <Search placeholder={"Search"} />
-      </div>
-      <div className={styles.cards}>
-        <Card />
-        <Card />
-        <Card />
-        <Card />
-        <Card />
-        <Card />
-        <Card />
-        <Card />
-        <Card />
-      </div>
-      <div className={styles.pagination}>
-        <Paginator />
-      </div>
-    </>
-  );
+  const [news, setNews] = useState("");
+  const [page, setPage] = useState(1);
+
+  useEffect(() => {
+    if (news === "") {
+      const requestOptions = {
+        method: "GET",
+        credentials: "include",
+      };
+
+      fetch(`http://localhost:4000/news/${page}`, requestOptions)
+        .then((response) => response.json())
+        .then((data) => {
+          setNews(data.data);
+        })
+        .catch((error) => {
+          console.log("user is not logged in", error);
+        });
+    }
+  }, [news, page]);
+
+  if (news !== "") {
+    console.log(news);
+    return (
+      <>
+        <div className={styles["search-panel"]}>
+          <h2>News</h2>
+          <Search placeholder={"Search"} />
+        </div>
+        <div className={styles.cards}>
+          {news.map((v, i) => (
+            <Card
+              name={v.article_name}
+              id={v.id}
+              publishAt={v.publish_at}
+              key={i}
+            />
+          ))}
+        </div>
+        <div className={styles.pagination}>
+          <Paginator />
+        </div>
+      </>
+    );
+  }
 };
 
 export default News;

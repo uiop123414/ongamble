@@ -237,3 +237,44 @@ func (m *PostgresDBRepo) GetArticle(id int) (*models.Article, error) {
 
 	return &article, nil
 }
+
+func (m *PostgresDBRepo) GetNews(page int) (*[]models.News, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	query := `SELECT id, name, created_at FROM articles WHERE publish=true ORDER BY created_at, id LIMIT $1 OFFSET $2`
+
+	var newsArr []models.News
+
+	limit := 9
+	offset := (page - 1) * 9
+
+	rows, err := m.DB.QueryContext(ctx, query, limit, offset)
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		var news models.News
+
+		err := rows.Scan(
+			&news.ID,
+			&news.Name,
+			&news.CreatedAt,
+		)
+
+		if err != nil {
+			return nil, err
+		}
+
+		newsArr = append(newsArr, news)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return &newsArr, err
+}

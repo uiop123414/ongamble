@@ -6,9 +6,11 @@ import styles from "./Profile.module.css";
 import ButtonSecondary from "./buttons/ButtonSecondary";
 import { selectJwtToken } from "./redux/slices/jwtTokenSlice";
 import avator from "../photoes/pngtree.jpg";
+import { useNavigate } from "react-router-dom";
 
 const Profile = () => {
   const jwtToken = useSelector(selectJwtToken);
+  const navigate = useNavigate();
   const [user, setUser] = useState({});
 
   useEffect(() => {
@@ -31,8 +33,10 @@ const Profile = () => {
         .catch((error) => {
           console.log("user is not logged in", error);
         });
+    } else {
+      navigate("/login");
     }
-  }, [jwtToken]);
+  }, [jwtToken, navigate]);
   return (
     <>
       <div className={styles["profile"]}>
