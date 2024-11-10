@@ -1,0 +1,15 @@
+# CREATE MIGRATION
+
+migrate create -seq -ext=sql -dir=migrations name_of_migrations
+
+# PERMORM MIGRATIONS
+
+migrate -path ./migrations -database "postgres://postgres:postgres@localhost/ongambl?sslmode=disable" up
+
+# Rollback migrations
+
+migrate -path ./migrations -database "postgres://postgres:postgres@localhost/ongambl?sslmode=disable" -verbose down
+
+# RESOLVE MIGRATIONS ERROR
+
+migrate -path ./migrations -database "postgres://postgres:postgres@localhost/ongambl?sslmode=disable" fix 0
