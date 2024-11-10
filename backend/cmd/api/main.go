@@ -47,7 +47,7 @@ func main() {
 	flag.IntVar(&cfg.port, "port", 4000, "API server port")
 	flag.StringVar(&cfg.env, "env", "dev", "env|dev|main")
 
-	flag.StringVar(&app.DSN, "dsn", "host=localhost port=5432 user=postgres password=postgres dbname=ongambl sslmode=disable timezone=UTC connect_timeout=5", "Database Source Name")
+	flag.StringVar(&app.DSN, "dsn", "host=localhost port=5432 user=postgres password=Qzpm231414 dbname=ongambl sslmode=disable timezone=UTC connect_timeout=5", "Database Source Name")
 	flag.StringVar(&app.Domain, "domain", "localhost", "domain")
 	flag.StringVar(&cfg.jwt.secret, "jwt-secret", "verysecret", "signing secret")
 	flag.StringVar(&cfg.jwt.issuer, "jwt-issuer", "example.com", "signing issuer")

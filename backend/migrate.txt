@@ -6,6 +6,10 @@ migrate create -seq -ext=sql -dir=migrations name_of_migrations
 
 migrate -path ./migrations -database "postgres://postgres:postgres@localhost/ongambl?sslmode=disable" up
 
+#laptop
+
+migrate -path ./migrations -database "postgres://postgres:Qzpm231414@localhost/ongambl?sslmode=disable" up
+
 # Rollback migrations
 
 migrate -path ./migrations -database "postgres://postgres:postgres@localhost/ongambl?sslmode=disable" -verbose down

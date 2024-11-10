@@ -1,18 +1,29 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import { selectCsrfToken } from "./redux/slices/csrfTokenSlice";
+import { selectJwtToken } from "./redux/slices/jwtTokenSlice";
 import { Link, useNavigate } from "react-router-dom";
 import styles from "./Login.module.css";
 import Input from "./form/Input";
 import SubmitButton from "./buttons/SubmitButton";
 import AuthHeader from "./headers/AuthHeader";
-import { selectCsrfToken } from "./redux/slices/csrfTokenSlice";
 
 const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [isJwt, setIsJwt] = useState(false);
   const csrfToken = useSelector(selectCsrfToken);
+  const jwtToken = useSelector(selectJwtToken);
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (isJwt === false) {
+      setIsJwt(true);
+    } else {
+      navigate("/profile");
+    }
+  }, [jwtToken]);
 
   const UpgradePartSubmit = () => {
     if ((username !== "") & (password !== "")) {

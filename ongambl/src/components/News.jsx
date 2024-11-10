@@ -17,7 +17,12 @@ const News = () => {
       fetch(`http://localhost:4000/news/${page}`, requestOptions)
         .then((response) => response.json())
         .then((data) => {
-          setNews(data.data);
+          console.log("Data", data)
+          if( data.data === null) {
+            setNews([]);
+          } else {
+            setNews(data.data);
+          }
         })
         .catch((error) => {
           console.log("user is not logged in", error);
