@@ -29,6 +29,17 @@ services:
     depends_on:
       - migrate
 
+  logger-service:
+    build:
+      context: ./../logger-service
+      dockerfile: ./../logger-service/logger-service.dockerfile
+    restart: always
+    ports:
+      - "4001:4000"
+    deploy:
+      mode: replicated
+      replicas: 1
+
   migrate:
     image: migrate/migrate
     volumes:
