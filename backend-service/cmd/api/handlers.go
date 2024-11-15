@@ -76,56 +76,60 @@ func (app *application) Login(w http.ResponseWriter, r *http.Request) {
 		app.errorJSON(w, err)
 		return
 	}
-
 	v := validator.New()
-
+	
 	if models.ValidatePasswordPlaintext(v, input.Password); !v.Valid() {
 		app.errorJSONWithMSG(w, errors.New("invalid credentials"), v.Errors, http.StatusUnprocessableEntity)
 		return
 	}
-
+	
 	user, err := app.DB.GetUserByUsername(input.Username)
 	if err != nil {
 		app.errorJSON(w, err)
 		return
 	}
-
+	
 	isMatches, err := user.PasswordMatches(input.Password)
 	if err != nil {
 		app.errorJSON(w, err)
 		return
 	}
-
+	
 	resp := JSONResponse{
 		Error:   false,
 		Message: "Successfully login",
 	}
-
+	
 	if !isMatches {
 		resp.Error = true
 		resp.Message = "Invalid password or username"
 		app.writeJSON(w, http.StatusBadRequest, resp)
 		return
 	}
-
+	
 	u := jwtUser{
 		ID:       user.ID,
 		Username: user.Username,
 	}
-
+	
 	tokens, err := app.auth.GenerateTokenPair(&u)
 	if err != nil {
 		app.errorJSON(w, err)
 		return
 	}
-
+	
 	refreshCookie := app.auth.GetRefreshCookie(tokens.RefreshToken)
-
+	
 	http.SetCookie(w, refreshCookie)
-
+	
 	resp.Data = tokens
-
+	
+	err = app.LogViaGRPC("Login", fmt.Sprintf("User %v logged in", user.Username))
+	if err != nil {
+		app.logger.PrintInfo("Message wasn't logged", map[string]string{})
+	}
 	app.writeJSON(w, http.StatusOK, resp)
+	
 }
 
 func (app *application) GetUserData(w http.ResponseWriter, r *http.Request) {
@@ -339,3 +343,4 @@ func (app *application) GetCheckAdmin(w http.ResponseWriter, r *http.Request) {
 		app.writeJSON(w, http.StatusOK, payload)
 	}
 }
+

@@ -9,6 +9,7 @@
 *.dylib
 
 backend-service/backendApp
+logger-service/loggerApp
 
 .envrc
 
