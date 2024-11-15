@@ -28,7 +28,7 @@ func main() {
 		log.Panic(err)
 	}
 
-	err = consumer.Listen([]string{"log.INFO", "log.WARNING", "log.ERROR"})
+	err = consumer.Listen([]string{"log.INFO", "log.WARNING", "log.ERROR", "email.task"})
 	if err != nil {
 		log.Println(err)
 	}

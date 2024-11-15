@@ -1,9 +1,11 @@
 package event
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"log"
+	"net/http"
 
 	amqp "github.com/rabbitmq/amqp091-go"
 )
@@ -35,9 +37,19 @@ func (consumer *Consumer) setup() error {
 
 	return declareExchange(channel)
 }
+
+type MailPayload struct {
+	From string `json:"from"`
+	To string `json:"to"`
+	Subject string `json:"subject"`
+	Message string  `json:"message"`
+}
+
+
 type Payload struct {
 	Name string `json:"name"`
-	Data string `json:"data"`
+	Data string `json:"data,omitempty"`
+	Mail MailPayload `json:"mail,omitempty"`
 }
 
 func (consumer *Consumer) Listen(topics[]string) error {
@@ -88,10 +100,16 @@ func (consumer *Consumer) Listen(topics[]string) error {
 }
 
 func handlePayload(payload Payload) {
+	log.Println(payload.Name)
 	switch payload.Name {
 	case  "log", "event":
 		// log whatever we get
 		err := logEvent(payload)
+		if err != nil {
+			log.Println(err)
+		}
+	case "email.task":
+		err := emailEvent(payload)
 		if err != nil {
 			log.Println(err)
 		}
@@ -104,6 +122,39 @@ func handlePayload(payload Payload) {
 }
 
 func logEvent(entry Payload) error {
-	return LogViaGRPC("Login",entry.Name)
+	return LogViaGRPC("Log",entry.Name)
 }
 
+func emailEvent(entry Payload) error {
+	return sendMail(entry.Mail)
+}
+
+
+func sendMail(msg MailPayload) error{
+	jsonData, err := json.Marshal(msg)
+	if err != nil {
+		return err
+	}
+	log.Println(jsonData)
+	mailServiceURL := "http://mail-service/send"
+
+	request, err := http.NewRequest("POST", mailServiceURL, bytes.NewBuffer(jsonData))
+	if err != nil {
+		return err
+	}
+
+	request.Header.Set("Content-Type", "application/json")
+
+	client := &http.Client{}
+	response, err := client.Do(request)
+	if err != nil {
+		return err
+	}
+	defer response.Body.Close()
+
+	if response.StatusCode != http.StatusAccepted {
+		return err
+	}
+
+	return nil
+}

@@ -111,7 +111,7 @@ func (app *application) GetAuthToken(r *http.Request) (string, error) {
 }
 
 
-func (app *application) SendMail(msg MailPayload) error{
+func (app *application) SendMail(msg EmailPayload) error{
 	jsonData, err := json.Marshal(msg)
 	if err != nil {
 		return err

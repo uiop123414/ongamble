@@ -15,13 +15,6 @@ import (
 	"github.com/golang-jwt/jwt/v4"
 )
 
-type MailPayload struct {
-	From string `json:"from"`
-	To string `json:"to"`
-	Subject string `json:"subject"`
-	Message string  `json:"message"`
-}
-
 func (app *application) CreateUserHandler(w http.ResponseWriter, r *http.Request) {
 	var input struct {
 		Username string `json:"username"`
@@ -131,16 +124,16 @@ func (app *application) Login(w http.ResponseWriter, r *http.Request) {
 	
 	resp.Data = tokens
 	
-	var msg MailPayload
+	var msg EmailPayload
 
 	msg.From="from@email.com"
 	msg.To="to@email.com"
-	msg.Message=fmt.Sprintf("You're were logged in at %v", time.Now())
+	msg.Body=fmt.Sprintf("You're were logged in at %v", time.Now())
 	msg.Subject="You're logged in"
 
-	app.SendMail(msg)
+	app.sendEmailViaRabbit(msg)
 
-	payload := LogPayload{Name: "Login", Data: fmt.Sprintf("User %v was logged in", u.ID)}
+	payload := Payload{Name: "Login", Data: fmt.Sprintf("User %v was logged in", u.ID)}
 	err = app.logEventViaRabbit(payload)
 	if err != nil {
 		app.logger.PrintInfo("Message wasn't logged", map[string]string{})

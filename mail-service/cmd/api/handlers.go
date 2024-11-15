@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 )
@@ -12,16 +13,17 @@ func (app *Config) SendMail(w http.ResponseWriter, r *http.Request) {
 		Subject string `json:"subject"`
 		Message string `json:"message"`
 	}
-
+	
 	var requestPayload mailMessage
-
+	
 	err := app.readJSON(w, r, &requestPayload)
 	if err != nil {
 		log.Println(err)
 		app.errorJSON(w, err)
 		return
 	}
-
+	
+	fmt.Println(requestPayload)
 	msg := Message{
 		From: requestPayload.From,
 		To: requestPayload.To,
