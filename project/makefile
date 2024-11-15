@@ -1,6 +1,7 @@
 # Set directory paths
 BACKEND_DIR = .././backend-service
 LOGGER_DIR = .././logger-service
+MAIL_DIR = .././mail-service
 FRONTEND_DIR = .././ongambl
 
 BACKEND_BINARY=backendApp
@@ -58,7 +59,7 @@ clean: backend-clean frontend-clean
 
 
 ## up_build: stops docker-compose (if running), builds all projects and starts docker compose
-up_build: build_backend build_logger_service
+up_build: build_backend build_logger_service build_mail_service
 	@echo "Stopping docker images (if running...)"
 	docker-compose down
 	@echo "Building (when required) and starting docker images..."
@@ -87,4 +88,10 @@ build_backend:
 build_logger_service:
 	@echo "Building logger_service application..."
 	cd ${LOGGER_DIR} && GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o ./loggerApp ./cmd/api
+	@echo "Done!"
+
+## build_mail_service: builds the mail binary as a windows executable
+build_mail_service:
+	@echo "Building logger_service application..."
+	cd ${MAIL_DIR} && GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o ./mailApp ./cmd/api
 	@echo "Done!"

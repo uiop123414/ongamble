@@ -15,6 +15,13 @@ import (
 	"github.com/golang-jwt/jwt/v4"
 )
 
+type MailPayload struct {
+	From string `json:"from"`
+	To string `json:"to"`
+	Subject string `json:"subject"`
+	Message string  `json:"message"`
+}
+
 func (app *application) CreateUserHandler(w http.ResponseWriter, r *http.Request) {
 	var input struct {
 		Username string `json:"username"`
@@ -124,12 +131,21 @@ func (app *application) Login(w http.ResponseWriter, r *http.Request) {
 	
 	resp.Data = tokens
 	
+	var msg MailPayload
+
+	msg.From="saddas"
+	msg.To="saddas"
+	msg.Message=fmt.Sprintf("You're were logged in at %v", time.Now())
+	msg.Subject="You're logged in"
+
+	app.SendMail(msg)
+
 	err = app.LogViaGRPC("Login", fmt.Sprintf("User %v logged in", user.Username))
 	if err != nil {
 		app.logger.PrintInfo("Message wasn't logged", map[string]string{})
 	}
+
 	app.writeJSON(w, http.StatusOK, resp)
-	
 }
 
 func (app *application) GetUserData(w http.ResponseWriter, r *http.Request) {
@@ -222,7 +238,12 @@ func (app *application) RefreshToken(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *application) Logout(w http.ResponseWriter, r *http.Request) {
+	payload := JSONResponse{
+		Error:   false,
+		Message: "Successfully Logged out",
+	}
 
+	app.writeJSON(w, http.StatusOK, payload)
 }
 func (app *application) CreateNewArticle(w http.ResponseWriter, r *http.Request) {
 	var input struct {

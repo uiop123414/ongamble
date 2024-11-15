@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"syscall"
 	"time"
 )
 
@@ -19,11 +20,11 @@ func (app *application) server() error {
 		WriteTimeout: 30 * time.Second,
 	}
 
-	shutdowmError := make(chan error)
+	shutdownError := make(chan error)
 
 	go func() {
 		quit := make(chan os.Signal, 1)
-		signal.Notify(quit)
+		signal.Notify(quit, os.Interrupt, syscall.SIGTERM) // TODO os.Signal may appear than /login runs, need make out with this problem 
 		s := <-quit
 
 		app.logger.PrintInfo("shutting down server", map[string]string{
@@ -35,7 +36,7 @@ func (app *application) server() error {
 
 		err := srv.Shutdown(ctx)
 		if err != nil {
-			shutdowmError <- err
+			shutdownError <- err
 		}
 
 		app.logger.PrintInfo("completting background tasks", map[string]string{
@@ -43,7 +44,7 @@ func (app *application) server() error {
 		})
 
 		app.wg.Wait()
-		shutdowmError <- err
+		shutdownError <- err
 	}()
 
 	app.logger.PrintInfo("starting server", map[string]string{
@@ -56,7 +57,7 @@ func (app *application) server() error {
 		return err
 	}
 
-	err = <-shutdowmError
+	err = <-shutdownError
 	if err != nil {
 		return err
 	}

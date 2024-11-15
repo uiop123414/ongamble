@@ -94,6 +94,8 @@ func main() {
 	defer app.DB.Conncetion().Close()
 
 	err = app.server()
-	app.logger.PrintFatal(err, nil)
+	if err != nil {
+		app.logger.PrintFatal(err, nil)
+	}
 
 }

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"io"
@@ -102,4 +103,34 @@ func (app *application) GetAuthToken(r *http.Request) (string, error) {
 	token := headerParts[1]
 
 	return token, nil
+}
+
+
+func (app *application) SendMail(msg MailPayload) error{
+	jsonData, err := json.Marshal(msg)
+	if err != nil {
+		return err
+	}
+
+	mailServiceURL := "http://mail-service/send"
+
+	request, err := http.NewRequest("POST", mailServiceURL, bytes.NewBuffer(jsonData))
+	if err != nil {
+		return err
+	}
+
+	request.Header.Set("Content-Type", "application/json")
+
+	client := &http.Client{}
+	response, err := client.Do(request)
+	if err != nil {
+		return err
+	}
+	defer response.Body.Close()
+
+	if response.StatusCode != http.StatusAccepted {
+		return err
+	}
+
+	return nil
 }
