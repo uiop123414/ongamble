@@ -29,6 +29,5 @@ func (app *application) LogViaGRPC(Name, Data string) error {
 	if err != nil {
 		return err
 	}
-	app.logger.PrintInfo("Exit Log ViaGRPC", map[string]string{})
 	return nil	
 }

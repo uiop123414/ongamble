@@ -133,14 +133,15 @@ func (app *application) Login(w http.ResponseWriter, r *http.Request) {
 	
 	var msg MailPayload
 
-	msg.From="saddas"
-	msg.To="saddas"
+	msg.From="from@email.com"
+	msg.To="to@email.com"
 	msg.Message=fmt.Sprintf("You're were logged in at %v", time.Now())
 	msg.Subject="You're logged in"
 
 	app.SendMail(msg)
 
-	err = app.LogViaGRPC("Login", fmt.Sprintf("User %v logged in", user.Username))
+	payload := LogPayload{Name: "Login", Data: fmt.Sprintf("User %v was logged in", u.ID)}
+	err = app.logEventViaRabbit(payload)
 	if err != nil {
 		app.logger.PrintInfo("Message wasn't logged", map[string]string{})
 	}

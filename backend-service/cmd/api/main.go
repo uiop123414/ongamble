@@ -9,6 +9,8 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	amqp "github.com/rabbitmq/amqp091-go"
 )
 
 type config struct {
@@ -38,6 +40,7 @@ type application struct {
 	Domain string
 	DSN    string
 	DB     repository.DatabaseRepo
+	Rabbit *amqp.Connection
 }
 
 func main() {
@@ -72,6 +75,15 @@ func main() {
 
 	app.logger = jsonlog.New(os.Stdout, jsonlog.LevelInfo)
 	app.cfg = cfg
+
+	rabbitConn, err := app.connectToRabbit()
+	if err != nil {
+		app.logger.PrintFatal(err , map[string]string{})
+		return
+	}
+	defer rabbitConn.Close()
+	
+	app.Rabbit= rabbitConn
 
 	app.auth = Auth{
 		Issuer:        app.cfg.jwt.issuer,
