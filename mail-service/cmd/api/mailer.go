@@ -49,7 +49,7 @@ func (m *Mail) SendSMTPMessage(msg Message) error {
 	if err != nil {
 		return err
 	}
-	
+
 	plainMessage, err := m.builPlainTextMessage(msg)
 	if err != nil {
 		return err
@@ -74,7 +74,7 @@ func (m *Mail) SendSMTPMessage(msg Message) error {
 	email.SetFrom(msg.From).
 		AddTo(msg.To).
 		SetSubject(msg.Subject)
-	
+
 	email.SetBody(mail.TextPlain, plainMessage)
 	email.AddAlternative(mail.TextHTML, formattedMessage)
 
@@ -117,8 +117,8 @@ func (m *Mail) buildHTMLMessage(msg Message) (string, error) {
 
 func (m *Mail) inlineCSS(s string) (string, error) {
 	options := premailer.Options{
-		RemoveClasses: false,
-		CssToAttributes: false,
+		RemoveClasses:     false,
+		CssToAttributes:   false,
 		KeepBangImportant: true,
 	}
 

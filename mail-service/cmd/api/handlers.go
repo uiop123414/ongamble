@@ -8,27 +8,27 @@ import (
 
 func (app *Config) SendMail(w http.ResponseWriter, r *http.Request) {
 	type mailMessage struct {
-		From string `json:"from"`
-		To string `json:"to"`
+		From    string `json:"from"`
+		To      string `json:"to"`
 		Subject string `json:"subject"`
 		Message string `json:"message"`
 	}
-	
+
 	var requestPayload mailMessage
-	
+
 	err := app.readJSON(w, r, &requestPayload)
 	if err != nil {
 		log.Println(err)
 		app.errorJSON(w, err)
 		return
 	}
-	
+
 	fmt.Println(requestPayload)
 	msg := Message{
-		From: requestPayload.From,
-		To: requestPayload.To,
+		From:    requestPayload.From,
+		To:      requestPayload.To,
 		Subject: requestPayload.Subject,
-		Data: requestPayload.Message,
+		Data:    requestPayload.Message,
 	}
 
 	err = app.Mailer.SendSMTPMessage(msg)
@@ -39,7 +39,7 @@ func (app *Config) SendMail(w http.ResponseWriter, r *http.Request) {
 	}
 
 	payload := jsonResponse{
-		Error: false,
+		Error:   false,
 		Message: "sent to" + requestPayload.To,
 	}
 
