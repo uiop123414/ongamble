@@ -110,8 +110,7 @@ func (app *application) GetAuthToken(r *http.Request) (string, error) {
 	return token, nil
 }
 
-
-func (app *application) SendMail(msg EmailPayload) error{
+func (app *application) SendMail(msg EmailPayload) error {
 	jsonData, err := json.Marshal(msg)
 	if err != nil {
 		return err
@@ -140,7 +139,7 @@ func (app *application) SendMail(msg EmailPayload) error{
 	return nil
 }
 
-func (app *application) connectToRabbit()(*amqp.Connection, error) {
+func (app *application) connectToRabbit() (*amqp.Connection, error) {
 	var counts int64
 	var backOff = 1 * time.Second
 	var connection *amqp.Connection

@@ -302,7 +302,7 @@ func (m *PostgresDBRepo) GetUserPermissions(token string) (*[]string, error) {
 				AND scope = $2
 		) as tokens ON users_permissions.user_id = tokens.user_id
 	) as tmp ON permissions.id = tmp.id`
-	
+
 	rows, err := m.DB.QueryContext(ctx, query, token, models.ScopeActivation)
 	if err != nil {
 		return nil, err
@@ -326,6 +326,6 @@ func (m *PostgresDBRepo) GetUserPermissions(token string) (*[]string, error) {
 	if err = rows.Err(); err != nil {
 		return nil, err
 	}
-	
+
 	return &permissions, nil
 }

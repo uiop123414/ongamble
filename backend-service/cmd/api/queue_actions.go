@@ -5,18 +5,17 @@ import (
 	"ongambl/event"
 )
 
-
 type Payload struct {
-	Name string `json:"name"`
-	Data string `json:"data,omitempty"`
+	Name string       `json:"name"`
+	Data string       `json:"data,omitempty"`
 	Mail EmailPayload `json:"mail,omitempty"`
 }
 
 type EmailPayload struct {
 	From    string `json:"from"`
-    To      string `json:"to"`
-    Subject string `json:"subject"`
-    Body    string `json:"body"`
+	To      string `json:"to"`
+	Subject string `json:"subject"`
+	Body    string `json:"body"`
 }
 
 func (app *application) logEventViaRabbit(payload Payload) error {

@@ -29,5 +29,5 @@ func (app *application) LogViaGRPC(Name, Data string) error {
 	if err != nil {
 		return err
 	}
-	return nil	
+	return nil
 }

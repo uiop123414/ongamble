@@ -19,7 +19,7 @@ type LogServer struct {
 func (app *Config) gRPCListen() {
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", gRpcPort))
 	if err != nil {
-		log.Printf("Failed to listen to gRPC: %v", err) 
+		log.Printf("Failed to listen to gRPC: %v", err)
 	}
 
 	s := grpc.NewServer()
@@ -36,7 +36,7 @@ func (l *LogServer) WriteLog(ctx context.Context, req *logs.LogRequest) (*logs.L
 	input := req.GetLogEntry()
 
 	// write the log
-	logEntry := data.LogEntry {
+	logEntry := data.LogEntry{
 		Name: input.Name,
 		Data: input.Data,
 	}

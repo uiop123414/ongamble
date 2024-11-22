@@ -77,59 +77,59 @@ func (app *application) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	v := validator.New()
-	
+
 	if models.ValidatePasswordPlaintext(v, input.Password); !v.Valid() {
 		app.errorJSONWithMSG(w, errors.New("invalid credentials"), v.Errors, http.StatusUnprocessableEntity)
 		return
 	}
-	
+
 	user, err := app.DB.GetUserByUsername(input.Username)
 	if err != nil {
 		app.errorJSON(w, err)
 		return
 	}
-	
+
 	isMatches, err := user.PasswordMatches(input.Password)
 	if err != nil {
 		app.errorJSON(w, err)
 		return
 	}
-	
+
 	resp := JSONResponse{
 		Error:   false,
 		Message: "Successfully login",
 	}
-	
+
 	if !isMatches {
 		resp.Error = true
 		resp.Message = "Invalid password or username"
 		app.writeJSON(w, http.StatusBadRequest, resp)
 		return
 	}
-	
+
 	u := jwtUser{
 		ID:       user.ID,
 		Username: user.Username,
 	}
-	
+
 	tokens, err := app.auth.GenerateTokenPair(&u)
 	if err != nil {
 		app.errorJSON(w, err)
 		return
 	}
-	
+
 	refreshCookie := app.auth.GetRefreshCookie(tokens.RefreshToken)
-	
+
 	http.SetCookie(w, refreshCookie)
-	
+
 	resp.Data = tokens
-	
+
 	var msg EmailPayload
 
-	msg.From="from@email.com"
-	msg.To="to@email.com"
-	msg.Body=fmt.Sprintf("You're were logged in at %v", time.Now())
-	msg.Subject="You're logged in"
+	msg.From = "from@email.com"
+	msg.To = "to@email.com"
+	msg.Body = fmt.Sprintf("You're were logged in at %v", time.Now())
+	msg.Subject = "You're logged in"
 
 	app.sendEmailViaRabbit(msg)
 
@@ -350,7 +350,7 @@ func (app *application) GetCheckAdmin(w http.ResponseWriter, r *http.Request) {
 		Data:    true,
 	}
 
-	if slices.Contains(*permissions, models.AdminWrite){
+	if slices.Contains(*permissions, models.AdminWrite) {
 		app.writeJSON(w, http.StatusOK, payload)
 	} else {
 		payload.Message = "User is not admin"
@@ -358,4 +358,3 @@ func (app *application) GetCheckAdmin(w http.ResponseWriter, r *http.Request) {
 		app.writeJSON(w, http.StatusOK, payload)
 	}
 }
-

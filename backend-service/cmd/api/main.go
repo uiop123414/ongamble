@@ -66,7 +66,7 @@ func main() {
 		return nil
 	})
 	cfg.env = "docker"
-	if(cfg.env=="docker") {
+	if cfg.env == "docker" {
 		app.DSN = "host=postgres port=5432 user=postgres password=password dbname=ongambl sslmode=disable timezone=UTC connect_timeout=5"
 	}
 
@@ -78,12 +78,12 @@ func main() {
 
 	rabbitConn, err := app.connectToRabbit()
 	if err != nil {
-		app.logger.PrintFatal(err , map[string]string{})
+		app.logger.PrintFatal(err, map[string]string{})
 		return
 	}
 	defer rabbitConn.Close()
-	
-	app.Rabbit= rabbitConn
+
+	app.Rabbit = rabbitConn
 
 	app.auth = Auth{
 		Issuer:        app.cfg.jwt.issuer,

@@ -19,7 +19,7 @@ type Config struct {
 
 const (
 	mongoURI = "mongodb://mongo:27017/"
-	webPort = "80"
+	webPort  = "80"
 	gRpcPort = "50001"
 )
 
@@ -29,7 +29,7 @@ func main() {
 		log.Panic(err)
 	}
 	log.Println("Connected to mongodb")
-	ctx, cancel := context.WithTimeout(context.Background(), 15 *time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
 
 	defer func() {
@@ -47,7 +47,7 @@ func main() {
 
 	log.Println("Starting service on port ", webPort)
 	srv := &http.Server{
-		Addr: fmt.Sprintf(":%s", webPort),
+		Addr:    fmt.Sprintf(":%s", webPort),
 		Handler: app.routes(),
 	}
 
@@ -75,7 +75,6 @@ func connectMongo(mongoURI string) (*mongo.Client, error) {
 	if err != nil {
 		return nil, err
 	}
-
 
 	return client, nil
 }

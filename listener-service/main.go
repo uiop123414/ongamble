@@ -54,7 +54,7 @@ func connect() (*amqp.Connection, error) {
 			fmt.Println(err)
 			return nil, err
 		}
-		
+
 		backOff = time.Duration(math.Pow(float64(counts), 2)) * time.Second
 		log.Println("backing off...")
 		time.Sleep(backOff)

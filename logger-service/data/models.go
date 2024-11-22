@@ -17,7 +17,7 @@ var client *mongo.Client
 func New(mongo *mongo.Client) Models {
 	client = mongo
 
-	return Models {
+	return Models{
 		LogEntry: LogEntry{},
 	}
 }
@@ -27,9 +27,9 @@ type Models struct {
 }
 
 type LogEntry struct {
-	ID string `bson:"_id" json:"id,omitempty"`
-	Name string `bson:"name" json:"name"`
-	Data string `bson:"data" json:"data"`
+	ID        string    `bson:"_id" json:"id,omitempty"`
+	Name      string    `bson:"name" json:"name"`
+	Data      string    `bson:"data" json:"data"`
 	CreatedAt time.Time `bson:"created_at" json:"created_at"`
 	UpdatedAt time.Time `bson:"updated_at" json:"updated_at"`
 }
@@ -52,14 +52,14 @@ func (l *LogEntry) Insert(entry LogEntry) error {
 
 func (l *LogEntry) All() ([]*LogEntry, error) {
 
-	ctx, cancel := context.WithTimeout(context.Background(), 15 *time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
 
 	collection := client.Database("logs").Collection("logs")
 
 	opts := options.Find()
 	opts.SetSort(bson.D{{"created_at", -1}})
-	
+
 	cursor, err := collection.Find(context.TODO(), bson.D{}, opts)
 	if err != nil {
 		log.Println("Finding all docs error: ", err)
@@ -86,7 +86,7 @@ func (l *LogEntry) All() ([]*LogEntry, error) {
 }
 
 func (l *LogEntry) GetOne(id string) (*LogEntry, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 15 *time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
 
 	collection := client.Database("logs").Collection("logs")
@@ -106,7 +106,7 @@ func (l *LogEntry) GetOne(id string) (*LogEntry, error) {
 }
 
 func (l *LogEntry) DropCollection() error {
-	ctx, cancel := context.WithTimeout(context.Background(), 15 * time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
 
 	collection := client.Database("logs").Collection("logs")
@@ -119,11 +119,11 @@ func (l *LogEntry) DropCollection() error {
 }
 
 func (l *LogEntry) Update() (*mongo.UpdateResult, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 15 *time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
-	
+
 	collection := client.Database("logs").Collection("logs")
-	
+
 	docID, err := primitive.ObjectIDFromHex(l.ID)
 	if err != nil {
 		return nil, err
@@ -131,8 +131,8 @@ func (l *LogEntry) Update() (*mongo.UpdateResult, error) {
 
 	result, err := collection.UpdateByID(ctx, bson.M{"_id": docID}, bson.D{
 		{"$set", bson.D{{"name", l.Name},
-		 {"data", l.Data},
-		  {"updated_at", time.Now()}},
+			{"data", l.Data},
+			{"updated_at", time.Now()}},
 		},
 	})
 	if err != nil {

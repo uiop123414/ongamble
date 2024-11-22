@@ -24,7 +24,7 @@ func (app *application) server() error {
 
 	go func() {
 		quit := make(chan os.Signal, 1)
-		signal.Notify(quit, os.Interrupt, syscall.SIGTERM) // TODO os.Signal may appear than /login runs, need make out with this problem 
+		signal.Notify(quit, os.Interrupt, syscall.SIGTERM) // TODO os.Signal may appear than /login runs, need make out with this problem
 		s := <-quit
 
 		app.logger.PrintInfo("shutting down server", map[string]string{
