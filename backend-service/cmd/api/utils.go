@@ -8,17 +8,22 @@ import (
 	"io"
 	"math"
 	"net/http"
+	"ongambl/internal/models"
 	"strings"
 	"time"
 
 	amqp "github.com/rabbitmq/amqp091-go"
+	"github.com/xeipuuv/gojsonschema"
 )
+
+const RequestSizeLimit = 2 * 1024 * 1024 // 2 kBs
 
 type JSONResponse struct {
 	Error   bool        `json:"error"`
 	Message string      `json:"message"`
 	Data    interface{} `json:"data,omitempty"`
 }
+
 
 func (app *application) writeJSON(w http.ResponseWriter, status int, data interface{}, headers ...http.Header) error {
 	out, err := json.Marshal(data)
@@ -42,23 +47,23 @@ func (app *application) writeJSON(w http.ResponseWriter, status int, data interf
 	return nil
 }
 
-func (app *application) readJSON(w http.ResponseWriter, r *http.Request, data interface{}) error {
-	maxBytes := 1024 * 1024
-	r.Body = http.MaxBytesReader(w, r.Body, int64(maxBytes))
+func (app *application) readJSON(w http.ResponseWriter, r *http.Request, loader gojsonschema.JSONLoader, data interface{}) error {
+	r.Body = http.MaxBytesReader(w, r.Body, int64(RequestSizeLimit))
+	defer r.Body.Close()
 
-	dec := json.NewDecoder(r.Body)
-
-	dec.DisallowUnknownFields()
-
-	err := dec.Decode(data)
+	bodyBytes, err := io.ReadAll(r.Body)
 	if err != nil {
 		return err
 	}
-	defer r.Body.Close()
 
-	err = dec.Decode(&struct{}{})
-	if err != io.EOF {
-		return errors.New("body must only contain a single JSON value")
+	err = app.validateJSON(loader, bodyBytes)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(bodyBytes, data)
+	if err != nil {
+		return err
 	}
 
 	return nil
@@ -166,4 +171,20 @@ func (app *application) connectToRabbit() (*amqp.Connection, error) {
 	}
 
 	return connection, nil
+}
+
+
+func (app *application) validateJSON(loader gojsonschema.JSONLoader, data []byte) error {
+	payloadLoader := gojsonschema.NewBytesLoader(data)
+
+	result, err := gojsonschema.Validate(loader, payloadLoader)
+	if err != nil {
+		return err
+	}
+
+	if !result.Valid() {
+		return models.ErrJSONNotValid
+	}
+
+	return nil
 }

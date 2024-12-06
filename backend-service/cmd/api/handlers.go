@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"ongambl/internal/models"
+	"ongambl/internal/schemas"
 	"ongambl/internal/validator"
 	"slices"
 	"strconv"
@@ -16,13 +17,7 @@ import (
 )
 
 func (app *application) CreateUserHandler(w http.ResponseWriter, r *http.Request) {
-	var input struct {
-		Username string `json:"username"`
-		Email    string `json:"email"`
-		Password string `json:"password"`
-	}
-
-	err := app.readJSON(w, r, &input)
+	err := app.readJSON(w, r, schemas.CreateUserLoader, &CreateUserPayload)
 	if err != nil {
 		app.errorJSON(w, err)
 		return
@@ -30,8 +25,8 @@ func (app *application) CreateUserHandler(w http.ResponseWriter, r *http.Request
 
 	v := validator.New()
 
-	models.ValidateEmail(v, input.Email)
-	models.ValidatePasswordPlaintext(v, input.Password)
+	models.ValidateEmail(v, CreateUserPayload.Email)
+	models.ValidatePasswordPlaintext(v, CreateUserPayload.Password)
 
 	if !v.Valid() {
 		app.errorJSONWithMSG(w, errors.New("invalid credentials"), v.Errors, http.StatusUnprocessableEntity)
@@ -39,9 +34,9 @@ func (app *application) CreateUserHandler(w http.ResponseWriter, r *http.Request
 	}
 
 	user := models.User{
-		Username: input.Username,
-		Email:    input.Email,
-		Password: input.Password,
+		Username: CreateUserPayload.Username,
+		Email:    CreateUserPayload.Email,
+		Password: CreateUserPayload.Password,
 	}
 
 	err = user.SetPasswordHash()
@@ -66,30 +61,25 @@ func (app *application) CreateUserHandler(w http.ResponseWriter, r *http.Request
 }
 
 func (app *application) Login(w http.ResponseWriter, r *http.Request) {
-	var input struct {
-		Username string `json:"username"`
-		Password string `json:"password"`
-	}
-
-	err := app.readJSON(w, r, &input)
+	err := app.readJSON(w, r, schemas.LoginUserLoader, &LoginUserPayload)
 	if err != nil {
 		app.errorJSON(w, err)
 		return
 	}
 	v := validator.New()
 
-	if models.ValidatePasswordPlaintext(v, input.Password); !v.Valid() {
+	if models.ValidatePasswordPlaintext(v, LoginUserPayload.Password); !v.Valid() {
 		app.errorJSONWithMSG(w, errors.New("invalid credentials"), v.Errors, http.StatusUnprocessableEntity)
 		return
 	}
 
-	user, err := app.DB.GetUserByUsername(input.Username)
+	user, err := app.DB.GetUserByUsername(LoginUserPayload.Username)
 	if err != nil {
 		app.errorJSON(w, err)
 		return
 	}
 
-	isMatches, err := user.PasswordMatches(input.Password)
+	isMatches, err := user.PasswordMatches(LoginUserPayload.Password)
 	if err != nil {
 		app.errorJSON(w, err)
 		return
@@ -240,22 +230,13 @@ func (app *application) Logout(w http.ResponseWriter, r *http.Request) {
 	app.writeJSON(w, http.StatusOK, payload)
 }
 func (app *application) CreateNewArticle(w http.ResponseWriter, r *http.Request) {
-	var input struct {
-		ArticleName string        `json:"articleName"`
-		Username    string        `json:"username"`
-		Time        string        `json:"time"`
-		Blocks      []interface{} `json:"blocks"`
-		Publish     bool          `json:"publish"`
-		Version     string        `json:"version"`
-	}
-
-	err := app.readJSON(w, r, &input)
+	err := app.readJSON(w, r, schemas.CreateArticleLoader, &CreateArticlePayload)
 	if err != nil {
 		app.errorJSON(w, err)
 		return
 	}
 
-	htmlList, err := json.Marshal(input.Blocks)
+	htmlList, err := json.Marshal(CreateArticlePayload.Blocks)
 	if err != nil {
 		fmt.Println("Error marshaling Blocks:", err)
 		return
@@ -264,11 +245,11 @@ func (app *application) CreateNewArticle(w http.ResponseWriter, r *http.Request)
 	blocksString := string(htmlList)
 
 	article := models.Article{
-		Name:        input.ArticleName,
-		Username:    input.Username,
-		ReadingTime: input.Time,
+		Name:        CreateArticlePayload.ArticleName,
+		Username:    CreateArticlePayload.Username,
+		ReadingTime: CreateArticlePayload.Time,
 		HtmlList:    blocksString,
-		Publish:     input.Publish,
+		Publish:     CreateArticlePayload.Publish,
 	}
 
 	err = app.DB.NewArticle(&article)
