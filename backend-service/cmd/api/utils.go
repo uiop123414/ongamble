@@ -188,3 +188,14 @@ func (app *application) validateJSON(loader gojsonschema.JSONLoader, data []byte
 
 	return nil
 }
+
+func (app *application) sendLoggedInMailViaRabbitMQ() {
+	var msg EmailPayload
+
+	msg.From = "from@email.com"
+	msg.To = "to@email.com"
+	msg.Body = fmt.Sprintf("You're were logged in at %v", time.Now())
+	msg.Subject = "You're logged in"
+
+	app.sendEmailViaRabbit(msg)
+}

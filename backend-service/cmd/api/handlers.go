@@ -114,14 +114,7 @@ func (app *application) Login(w http.ResponseWriter, r *http.Request) {
 
 	resp.Data = tokens
 
-	var msg EmailPayload
-
-	msg.From = "from@email.com"
-	msg.To = "to@email.com"
-	msg.Body = fmt.Sprintf("You're were logged in at %v", time.Now())
-	msg.Subject = "You're logged in"
-
-	app.sendEmailViaRabbit(msg)
+	app.sendLoggedInMailViaRabbitMQ()
 
 	payload := Payload{Name: "Login", Data: fmt.Sprintf("User %v was logged in", u.ID)}
 	err = app.logEventViaRabbit(payload)
