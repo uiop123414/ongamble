@@ -10,7 +10,7 @@
 
 backend-service/backendApp
 logger-service/loggerApp
-listener-service/listnerApp
+listener-service/listenerApp
 mail-service/mailApp
 
 .envrc
