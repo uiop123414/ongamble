@@ -303,7 +303,7 @@ func (m *PostgresDBRepo) GetArticle(id int) (*models.Article, error) {
 	return &article, nil
 }
 
-func (m *PostgresDBRepo) GetNews(page int) (*[]models.News, error) {
+func (m *PostgresDBRepo) GetNews(page int) ([]models.News, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
@@ -350,10 +350,10 @@ func (m *PostgresDBRepo) GetNews(page int) (*[]models.News, error) {
 	}
 
 	tx.Commit()
-	return &newsArr, err
+	return newsArr, err
 }
 
-func (m *PostgresDBRepo) GetUserPermissions(token string) (*[]string, error) {
+func (m *PostgresDBRepo) GetUserPermissions(token string) ([]string, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
@@ -412,5 +412,5 @@ func (m *PostgresDBRepo) GetUserPermissions(token string) (*[]string, error) {
 
 	tx.Commit()
 
-	return &permissions, nil
+	return permissions, nil
 }
