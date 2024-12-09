@@ -324,7 +324,7 @@ func (app *application) GetCheckAdmin(w http.ResponseWriter, r *http.Request) {
 		Data:    true,
 	}
 
-	if slices.Contains(*permissions, models.AdminWrite) {
+	if slices.Contains(permissions, models.AdminWrite) {
 		app.writeJSON(w, http.StatusOK, payload)
 	} else {
 		payload.Message = "User is not admin"
