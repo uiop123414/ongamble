@@ -12,6 +12,7 @@ backend-service/backendApp
 logger-service/loggerApp
 listener-service/listenerApp
 mail-service/mailApp
+chatgpt-service/chatgptArticleApp
 
 .envrc
 

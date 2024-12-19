@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"ongambl/internal/jsonlog"
+	"ongambl/internal/kafka"
 	"ongambl/internal/repository"
 	"ongambl/internal/repository/dbrepo"
 	"os"
@@ -11,6 +12,7 @@ import (
 	"time"
 
 	amqp "github.com/rabbitmq/amqp091-go"
+	"github.com/sirupsen/logrus"
 )
 
 type config struct {
@@ -30,6 +32,7 @@ type config struct {
 		audience     string
 		cookieDomain string
 	}
+
 }
 
 type application struct {
@@ -41,7 +44,11 @@ type application struct {
 	DSN    string
 	DB     repository.DatabaseRepo
 	Rabbit *amqp.Connection
+	Producer *kafka.Producer
 }
+
+var address = []string{"localhost:9091"}
+
 
 func main() {
 	var cfg config
@@ -60,7 +67,7 @@ func main() {
 	flag.IntVar(&cfg.db.maxOpensConns, "db-max-opens-conns", 25, "PostgreSQL max open connections")
 	flag.IntVar(&cfg.db.maxIdleConns, "db-max-idle-conns", 25, "PostgreSQL max edle connections")
 	flag.StringVar(&cfg.db.maxIdleTime, "db-max-idle-time", "15m", "PostgreSQL max connections idle time")
-
+	
 	flag.Func("cors-trusted-origins", "Trusted CORS origins http://localhost:3000", func(s string) error {
 		cfg.cors.trustedOrigins = strings.Fields(s)
 		return nil
@@ -78,12 +85,15 @@ func main() {
 
 	rabbitConn, err := app.connectToRabbit()
 	if err != nil {
-		app.logger.PrintFatal(err, map[string]string{})
-		return
+		logrus.Fatal(err)
 	}
 	defer rabbitConn.Close()
 
 	app.Rabbit = rabbitConn
+	app.Producer, err  = kafka.NewProducer(address)
+	if err != nil {
+		logrus.Fatal(err)
+	}
 
 	app.auth = Auth{
 		Issuer:        app.cfg.jwt.issuer,
@@ -98,7 +108,7 @@ func main() {
 
 	conn, err := app.connectToDB()
 	if err != nil {
-		app.logger.PrintFatal(err, map[string]string{})
+		logrus.Fatal(err)
 		return
 	}
 
@@ -107,7 +117,7 @@ func main() {
 
 	err = app.server()
 	if err != nil {
-		app.logger.PrintFatal(err, nil)
+		logrus.Fatal(err)
 	}
 
 }

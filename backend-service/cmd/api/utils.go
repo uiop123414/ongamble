@@ -152,7 +152,7 @@ func (app *application) connectToRabbit() (*amqp.Connection, error) {
 	for {
 		c, err := amqp.Dial("amqp://guest:guest@rabbitmq")
 		if err != nil {
-			fmt.Println("RabbitMQ is not year ready...")
+			fmt.Println("RabbitMQ is not yet ready...")
 			counts++
 		} else {
 			fmt.Println("Connected to RabbitMQ!")

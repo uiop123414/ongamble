@@ -18,12 +18,15 @@ func (app *application) routes() http.Handler {
 	mux.Use(csrfMiddleware)
 	mux.Use(app.CRSFAdder)
 
+	
 	mux.Use(app.authenticate)
-
+	
 	mux.Post("/create-user", app.CreateUserHandler)
 	mux.Post("/login", app.Login)
 	mux.Get("/refresh", app.RefreshToken)
 	mux.Get("/logout", app.Logout)
+	
+	mux.Post("/create-ai-article", app.CreateAiArticle)
 
 	mux.Get("/news/{page}", app.GetNews)
 	mux.Get("/article/{id}", app.GetArticle)

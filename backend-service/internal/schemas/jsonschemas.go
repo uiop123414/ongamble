@@ -14,6 +14,7 @@ func getJsonSchema(name string) gojsonschema.JSONLoader {
 
 var (
 	CreateArticleLoader = getJsonSchema("CreateArticle")
+	CreateAiArticleLoader = getJsonSchema("CreateAiArticle")
 	CreateUserLoader = getJsonSchema("CreateUser")
 	LoginUserLoader = getJsonSchema("LoginArticle")
 )

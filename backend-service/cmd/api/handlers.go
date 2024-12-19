@@ -14,10 +14,13 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/golang-jwt/jwt/v4"
+	"github.com/google/uuid"
 )
 
 func (app *application) CreateUserHandler(w http.ResponseWriter, r *http.Request) {
-	err := app.readJSON(w, r, schemas.CreateUserLoader, &CreateUserPayload)
+	cup := CreateUserPayload
+
+	err := app.readJSON(w, r, schemas.CreateUserLoader, &cup)
 	if err != nil {
 		app.errorJSON(w, err)
 		return
@@ -25,8 +28,8 @@ func (app *application) CreateUserHandler(w http.ResponseWriter, r *http.Request
 
 	v := validator.New()
 
-	models.ValidateEmail(v, CreateUserPayload.Email)
-	models.ValidatePasswordPlaintext(v, CreateUserPayload.Password)
+	models.ValidateEmail(v, cup.Email)
+	models.ValidatePasswordPlaintext(v, cup.Password)
 
 	if !v.Valid() {
 		app.errorJSONWithMSG(w, errors.New("invalid credentials"), v.Errors, http.StatusUnprocessableEntity)
@@ -34,9 +37,9 @@ func (app *application) CreateUserHandler(w http.ResponseWriter, r *http.Request
 	}
 
 	user := models.User{
-		Username: CreateUserPayload.Username,
-		Email:    CreateUserPayload.Email,
-		Password: CreateUserPayload.Password,
+		Username: cup.Username,
+		Email:    cup.Email,
+		Password: cup.Password,
 	}
 
 	err = user.SetPasswordHash()
@@ -61,25 +64,27 @@ func (app *application) CreateUserHandler(w http.ResponseWriter, r *http.Request
 }
 
 func (app *application) Login(w http.ResponseWriter, r *http.Request) {
-	err := app.readJSON(w, r, schemas.LoginUserLoader, &LoginUserPayload)
+	lup := LoginUserPayload
+
+	err := app.readJSON(w, r, schemas.LoginUserLoader, &lup)
 	if err != nil {
 		app.errorJSON(w, err)
 		return
 	}
 	v := validator.New()
 
-	if models.ValidatePasswordPlaintext(v, LoginUserPayload.Password); !v.Valid() {
+	if models.ValidatePasswordPlaintext(v, lup.Password); !v.Valid() {
 		app.errorJSONWithMSG(w, errors.New("invalid credentials"), v.Errors, http.StatusUnprocessableEntity)
 		return
 	}
 
-	user, err := app.DB.GetUserByUsername(LoginUserPayload.Username)
+	user, err := app.DB.GetUserByUsername(lup.Username)
 	if err != nil {
 		app.errorJSON(w, err)
 		return
 	}
 
-	isMatches, err := user.PasswordMatches(LoginUserPayload.Password)
+	isMatches, err := user.PasswordMatches(lup.Password)
 	if err != nil {
 		app.errorJSON(w, err)
 		return
@@ -223,13 +228,15 @@ func (app *application) Logout(w http.ResponseWriter, r *http.Request) {
 	app.writeJSON(w, http.StatusOK, payload)
 }
 func (app *application) CreateNewArticle(w http.ResponseWriter, r *http.Request) {
-	err := app.readJSON(w, r, schemas.CreateArticleLoader, &CreateArticlePayload)
+	cap := CreateArticlePayload
+
+	err := app.readJSON(w, r, schemas.CreateArticleLoader, &cap)
 	if err != nil {
 		app.errorJSON(w, err)
 		return
 	}
 
-	htmlList, err := json.Marshal(CreateArticlePayload.Blocks)
+	htmlList, err := json.Marshal(cap.Blocks)
 	if err != nil {
 		fmt.Println("Error marshaling Blocks:", err)
 		return
@@ -238,11 +245,11 @@ func (app *application) CreateNewArticle(w http.ResponseWriter, r *http.Request)
 	blocksString := string(htmlList)
 
 	article := models.Article{
-		Name:        CreateArticlePayload.ArticleName,
-		Username:    CreateArticlePayload.Username,
-		ReadingTime: CreateArticlePayload.Time,
+		Name:        cap.ArticleName,
+		Username:    cap.Username,
+		ReadingTime: cap.Time,
 		HtmlList:    blocksString,
-		Publish:     CreateArticlePayload.Publish,
+		Publish:     cap.Publish,
 	}
 
 	err = app.DB.NewArticle(&article)
@@ -331,4 +338,34 @@ func (app *application) GetCheckAdmin(w http.ResponseWriter, r *http.Request) {
 		payload.Data = false
 		app.writeJSON(w, http.StatusOK, payload)
 	}
+}
+
+func (app *application) CreateAiArticle(w http.ResponseWriter, r *http.Request) {
+	caap := CreateAiArticlePayload
+
+	err := app.readJSON(w, r, schemas.CreateAiArticleLoader, &caap)
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+
+	msg, err := json.Marshal(caap)
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+
+	key := uuid.New().String()
+
+	err = app.Producer.Produce(msg, "ai-article-topic", key, time.Now())
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+
+	payload := JSONResponse{
+		Error:   false,
+		Message: "Article was started creating",
+	}
+	app.writeJSON(w, http.StatusOK, payload)
 }

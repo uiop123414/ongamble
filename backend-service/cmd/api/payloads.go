@@ -19,3 +19,8 @@ var CreateArticlePayload struct {
 	Publish     bool          `json:"publish"`
 	Version     string        `json:"version"`
 }
+
+var CreateAiArticlePayload struct {
+	ArticleName string `json:"article_name"`
+	Request     string `json:"request"`
+}

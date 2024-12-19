@@ -4,6 +4,7 @@ LOGGER_DIR = .././logger-service
 MAIL_DIR = .././mail-service
 LISTENER_DIR = .././listener-service
 FRONTEND_DIR = .././ongambl
+CHATGPT_DIR = .././chatgpt-article
 
 BACKEND_BINARY=backendApp
 LOGGER_BINARY=loggerServiceApp
@@ -19,6 +20,11 @@ backend-run:
 backend-build:
 	@echo "Building backend server..."
 	cd $(BACKEND_DIR) && go build -o main ./...
+
+.PHONY: chatgpt-build
+chatgpt-build:
+	@echo "Building chatgpt server..."
+	cd $(CHATGPT_DIR) && go build -o main ./...
 
 .PHONY: backend-clean
 backend-clean:
@@ -60,7 +66,7 @@ clean: backend-clean frontend-clean
 
 
 ## up_build: stops docker-compose (if running), builds all projects and starts docker compose
-up_build: build_backend build_logger_service build_mail_service build_listener_service
+up_build: build_logger_service build_mail_service build_listener_service 
 	@echo "Stopping docker images (if running...)"
 	docker-compose down
 	@echo "Building (when required) and starting docker images..."
@@ -82,7 +88,13 @@ down:
 ## build_backend: builds the backend binary as a windows executable
 build_backend:
 	@echo "Building backend application..."
-	cd ${BACKEND_DIR} && GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o ./backendApp ./cmd/api
+	cd ${BACKEND_DIR} && GOOS=linux GOARCH=amd64 CGO_ENABLED=1 go build -o ./backendApp ./cmd/api
+	@echo "Done!"
+
+## build_backend: builds the backend binary as a windows executable
+build_chatgpt:
+	@echo "Building chatgpt application..."
+	cd ${CHATGPT_DIR} && GOOS=linux GOARCH=amd64 CGO_ENABLED=1 go build -o ./chatgptArticleApp ./cmd/consumer
 	@echo "Done!"
 
 ## build_logger_service: builds the logger binary as a windows executable
