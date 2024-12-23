@@ -18,6 +18,8 @@ RUN apk add --no-cache libc6-compat gcc g++ make
 # Copy the built binary from the builder stage
 COPY --from=builder /app/backendApp /app/backendApp
 
+COPY --from=builder /app/internal/schemas /app/schemas
+
 # Ensure the binary has execute permissions
 RUN chmod +x /app/backendApp
 

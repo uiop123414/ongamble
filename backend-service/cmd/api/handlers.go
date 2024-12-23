@@ -15,6 +15,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/google/uuid"
+	"github.com/sirupsen/logrus"
 )
 
 func (app *application) CreateUserHandler(w http.ResponseWriter, r *http.Request) {
@@ -345,12 +346,14 @@ func (app *application) CreateAiArticle(w http.ResponseWriter, r *http.Request) 
 
 	err := app.readJSON(w, r, schemas.CreateAiArticleLoader, &caap)
 	if err != nil {
+		logrus.Info(err)
 		app.errorJSON(w, err)
 		return
 	}
 
 	msg, err := json.Marshal(caap)
 	if err != nil {
+		logrus.Info(err)
 		app.errorJSON(w, err)
 		return
 	}
@@ -359,6 +362,7 @@ func (app *application) CreateAiArticle(w http.ResponseWriter, r *http.Request) 
 
 	err = app.Producer.Produce(msg, "ai-article-topic", key, time.Now())
 	if err != nil {
+		logrus.Info(err)
 		app.errorJSON(w, err)
 		return
 	}

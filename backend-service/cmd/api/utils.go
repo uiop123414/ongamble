@@ -24,7 +24,6 @@ type JSONResponse struct {
 	Data    interface{} `json:"data,omitempty"`
 }
 
-
 func (app *application) writeJSON(w http.ResponseWriter, status int, data interface{}, headers ...http.Header) error {
 	out, err := json.Marshal(data)
 	if err != nil {
@@ -172,7 +171,6 @@ func (app *application) connectToRabbit() (*amqp.Connection, error) {
 
 	return connection, nil
 }
-
 
 func (app *application) validateJSON(loader gojsonschema.JSONLoader, data []byte) error {
 	payloadLoader := gojsonschema.NewBytesLoader(data)

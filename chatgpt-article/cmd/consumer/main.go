@@ -11,11 +11,11 @@ import (
 )
 
 const (
-	topic = "ai-article-topic"
-	consumerGroup  = "ai-article-group"
+	topic         = "ai-article-topic"
+	consumerGroup = "ai-article-group"
 )
 
-var address = []string{"localhost:9091"}
+var address = []string{"kafka:9091"}
 
 func main() {
 	h := handlers.NewHandler()

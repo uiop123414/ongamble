@@ -10,10 +10,15 @@ import TableHeaderUsers from "../table/TableHeaderUsers";
 import TableHeaderArticles from "../table/TableHeaderArticles";
 import TableEntityArticles from "../table/TableEntityArticles";
 import TableEntityGames from "../table/TableEntityGames";
+import { selectCsrfToken } from "../redux/slices/csrfTokenSlice";
 import TableHeaderGames from "../table/TableHeaderGames";
+import { useSelector } from "react-redux";
+import Button from "../buttons/Button";
 
 const AdminProfile = () => {
   const [editFunc, setEditFunc] = useState("users");
+  const csrfToken = useSelector(selectCsrfToken);
+
   const aloneName = {
     users: "User",
     articles: "Article",
@@ -43,9 +48,37 @@ const AdminProfile = () => {
     setEditFunc("others");
   };
 
+  const UpgradePartSubmit = () => {
+      let payload = {
+        article_name: "Hello",
+        request: "Hello",
+      };
+
+      const requestOptions = {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRF-Token": csrfToken,
+        },
+        credentials: "include",
+        body: JSON.stringify(payload),
+      };
+      console.log(payload);
+      fetch(`http://localhost:4000/create-ai-article`, requestOptions)
+        .then((response) => response.json())
+        .then((data) => {
+          console.log(data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    
+  };
+
   const ProfilePart = () => {
     return (
       <>
+        <Button title={"Start gambling"} onClick={UpgradePartSubmit}/>
         <div className={styles["profile"]}>
           <div className={styles["profile-right"]}>
             <img alt="user-img"></img>

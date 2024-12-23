@@ -35,11 +35,11 @@ func NewProducer(address []string) (*Producer, error) {
 func (p *Producer) Produce(message []byte, topic, key string, t time.Time) error {
 	kafkaMsg := &kafka.Message{
 		TopicPartition: kafka.TopicPartition{
-			Topic: &topic,
+			Topic:     &topic,
 			Partition: kafka.PartitionAny,
 		},
-		Value: message,
-		Key: []byte(key),
+		Value:     message,
+		Key:       []byte(key),
 		Timestamp: t,
 	}
 

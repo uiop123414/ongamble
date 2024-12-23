@@ -19,19 +19,19 @@ type Handler interface {
 
 type Consumer struct {
 	consumer *kafka.Consumer
-	handler Handler
-	stop bool
+	handler  Handler
+	stop     bool
 }
 
 func NewConsumer(handler Handler, address []string, topic, consumerGroup string) (*Consumer, error) {
-	cfg := kafka.ConfigMap {
-		"bootstrap.servers": strings.Join(address, ","),
-		"group.id": consumerGroup,
-		"session.timeout.ms": sessionTimeout,
+	cfg := kafka.ConfigMap{
+		"bootstrap.servers":        strings.Join(address, ","),
+		"group.id":                 consumerGroup,
+		"session.timeout.ms":       sessionTimeout,
 		"enable.auto.offset.store": false,
-		"enable.auto.commit": true,
-		"auto.commit.interval.ms": 5000, // Commit offsets every 5 seconds
-		"auto.offset.reset": "earliest",
+		"enable.auto.commit":       true,
+		"auto.commit.interval.ms":  5000, // Commit offsets every 5 seconds
+		"auto.offset.reset":        "earliest",
 	}
 
 	c, err := kafka.NewConsumer(&cfg)
@@ -45,13 +45,13 @@ func NewConsumer(handler Handler, address []string, topic, consumerGroup string)
 
 	return &Consumer{
 		consumer: c,
-		handler: handler,
+		handler:  handler,
 	}, nil
 }
 
 func (c *Consumer) Start() {
 	for {
-		if c.stop{
+		if c.stop {
 			break
 		}
 		kafkaMsg, err := c.consumer.ReadMessage(noTimeout)

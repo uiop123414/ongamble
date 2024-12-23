@@ -4,7 +4,7 @@ services:
   postgres:
     image: "postgres:14.2"
     ports:
-      - "5433:5432"
+      - "5432:5432"
     restart: always
     deploy:
       mode: replicated
@@ -13,8 +13,10 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
       POSTGRES_DB: ongambl
-    volumes:
-      - ./db-data/postgres/:/var/lib/postgresql/data/
+    networks:
+      - postgres-network
+    # volumes:
+    #   - ./db-data/postgres/:/var/lib/postgresql/data/
 
   mongo:
     image: "mongo:4.2.16-bionic"
@@ -24,8 +26,8 @@ services:
       MONGO_INITDB_DATABASE: logs
       MONGO_INITDB_ROOT_USERNAME: admin
       MONGO_INITDB_ROOT_PASSWORD: password
-    volumes:
-      - ./db-data/mongo:/data/db
+    # volumes:
+    #   - ./db-data/mongo:/data/db
 
   backend-service:
     build:
@@ -37,17 +39,23 @@ services:
     deploy:
       mode: replicated
       replicas: 1
+    networks:
+      - kafka-network
+      - rabbit-network
+      - postgres-network
 
   chatgpt-article:
     build:
       context: ./../chatgpt-article
       dockerfile: ./../chatgpt-article/chatgpt-article-service.dockerfile
     restart: always
-    ports:
-      - "8081:8081"
     deploy:
       mode: replicated
       replicas: 1
+    networks:
+      - kafka-network
+    depends_on:
+      - kafka
 
   zookeeper:
     image: confluentinc/cp-zookeeper:7.7.1
@@ -57,66 +65,21 @@ services:
       - "2181:2181"
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
-      ZOOKEEPER_TICK_TIME: 2000
-      ZOOKEEPER_SERVER_ID: 3
-      ZOOKEEPER_INIT_LIMIT: 2
+    networks:
+      - kafka-network
 
-  kafka1:
-    image: confluentinc/cp-server:7.7.1
-    hostname: kafka1
-    container_name: kafka1
+  kafka:
+    image: confluentinc/cp-kafka:latest
     depends_on:
       - zookeeper
-    ports:
-      - "9091:9091"
     environment:
-      KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT, PLAINTEXT_HOST:PLAINTEXT
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka1:29091,PLAINTEXT_HOST://localhost:9091
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+      - KAFKA_LISTENERS=PLAINTEXT://kafka:9091
+      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9091
+      - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1
+    networks:
+      - kafka-network
 
-  kafka2:
-    image: confluentinc/cp-server:7.7.1
-    hostname: kafka2
-    container_name: kafka2
-    depends_on:
-      - zookeeper
-    ports:
-      - "9092:9092"
-    environment:
-      KAFKA_BROKER_ID: 2
-      KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT, PLAINTEXT_HOST:PLAINTEXT
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka2:29092,PLAINTEXT_HOST://localhost:9092
-
-  kafka3:
-    image: confluentinc/cp-server:7.7.1
-    hostname: kafka3
-    container_name: kafka3
-    depends_on:
-      - zookeeper
-    ports:
-      - "9093:9093"
-    environment:
-      KAFKA_BROKER_ID: 3
-      KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT, PLAINTEXT_HOST:PLAINTEXT
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka3:29093,PLAINTEXT_HOST://localhost:9093
-
-  kafka-ui:
-    container_name: kafka-ui
-    image: provectuslabs/kafka-ui:latest
-    ports:
-      - 9020:8080
-    environment:
-      AUTH_TYPE: DISABLED
-      KAFKA_CLUSTERS_0_NAME: local
-      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka1:29091,kafka2:29092,kafka3:29093
-      KAFKA_CLUSTERS_0_ZOOKEEPER: zookeeper:2181
-    depends_on:
-      - kafka1
-      - kafka2
-      - kafka3
 
   logger-service:
     build:
@@ -163,6 +126,9 @@ services:
     depends_on:
       - postgres
       - backend-service
+    networks:
+    - postgres-network
+
   mailhog:
     image: "mailhog/mailhog:latest"
     ports:
@@ -176,8 +142,10 @@ services:
     deploy:
       mode: replicated
       replicas: 1
-    volumes:
-      - ./db-data/rabbitmq/:/var/lib/rabbitmq
+    networks:
+    - rabbit-network
+    # volumes:
+    #   - ./db-data/rabbitmq/:/var/lib/rabbitmq
 
   listener-service:
     build:
@@ -186,3 +154,13 @@ services:
     deploy:
       mode: replicated
       replicas: 1
+    networks:
+      - rabbit-network
+
+networks:
+  kafka-network:
+    driver: bridge
+  rabbit-network:
+    driver: bridge
+  postgres-network:
+    driver: bridge

@@ -66,12 +66,15 @@ clean: backend-clean frontend-clean
 
 
 ## up_build: stops docker-compose (if running), builds all projects and starts docker compose
-up_build: build_logger_service build_mail_service build_listener_service 
+up_build: build_logger_service build_mail_service build_listener_service
 	@echo "Stopping docker images (if running...)"
 	docker-compose down
 	@echo "Building (when required) and starting docker images..."
 	docker-compose up --build -d
 	@echo "Docker images built and started!"
+	@echo "Run react frontend"
+	make frontend-install
+	make frontend-run
 
 ## up: starts all containers in the background without forcing build
 up:

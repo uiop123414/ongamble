@@ -32,23 +32,21 @@ type config struct {
 		audience     string
 		cookieDomain string
 	}
-
 }
 
 type application struct {
-	auth   Auth
-	cfg    config
-	logger *jsonlog.Logger
-	wg     sync.WaitGroup
-	Domain string
-	DSN    string
-	DB     repository.DatabaseRepo
-	Rabbit *amqp.Connection
+	auth     Auth
+	cfg      config
+	logger   *jsonlog.Logger
+	wg       sync.WaitGroup
+	Domain   string
+	DSN      string
+	DB       repository.DatabaseRepo
+	Rabbit   *amqp.Connection
 	Producer *kafka.Producer
 }
 
-var address = []string{"localhost:9091"}
-
+var address = []string{"kafka:9091"}
 
 func main() {
 	var cfg config
@@ -67,7 +65,7 @@ func main() {
 	flag.IntVar(&cfg.db.maxOpensConns, "db-max-opens-conns", 25, "PostgreSQL max open connections")
 	flag.IntVar(&cfg.db.maxIdleConns, "db-max-idle-conns", 25, "PostgreSQL max edle connections")
 	flag.StringVar(&cfg.db.maxIdleTime, "db-max-idle-time", "15m", "PostgreSQL max connections idle time")
-	
+
 	flag.Func("cors-trusted-origins", "Trusted CORS origins http://localhost:3000", func(s string) error {
 		cfg.cors.trustedOrigins = strings.Fields(s)
 		return nil
@@ -90,7 +88,8 @@ func main() {
 	defer rabbitConn.Close()
 
 	app.Rabbit = rabbitConn
-	app.Producer, err  = kafka.NewProducer(address)
+
+	app.Producer, err = kafka.NewProducer(address)
 	if err != nil {
 		logrus.Fatal(err)
 	}
