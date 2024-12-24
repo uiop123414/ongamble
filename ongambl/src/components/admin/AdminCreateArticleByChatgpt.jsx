@@ -12,28 +12,23 @@ import Button from "../buttons/Button";
 import { data } from "./data";
 import Input from "../form/Input";
 
-const AdminCreateNewArticle = () => {
+const AdminCreateArticleByChatgpt = () => {
   const csrfToken = useSelector(selectCsrfToken);
 
+  const [prompt, setPrompt] = useState("");
   const [username, setUsername] = useState("");
   const [time, setTime] = useState("");
   const [articleName, setArticleName] = useState("");
   const [publish, setPublish] = useState(true);
 
-  const EditorJs = createReactEditorJS();
-  const editorJS = useRef(null);
-
-  const handleInitialize = useCallback((instance) => {
-    editorJS.current = instance;
-  }, []);
-
   const handleSave = useCallback(async () => {
-    const payload = await editorJS.current.save();
-    payload.publish = publish;
-    payload.username = username;
-    payload.time = time;
-    payload.article_name = articleName;
-    console.log(payload, publish);
+    let payload = {
+      article_name: articleName,
+      request: prompt,
+      type: "create-chatgpt-article",
+    };
+
+    console.log(publish);
 
     const requestOptions = {
       method: "POST",
@@ -44,8 +39,7 @@ const AdminCreateNewArticle = () => {
       credentials: "include",
       body: JSON.stringify(payload),
     };
-    console.log(payload);
-    fetch(`http://localhost:4000/admin/create-article`, requestOptions)
+    fetch(`http://localhost:4000/create-ai-article`, requestOptions)
       .then((response) => response.json())
       .then((data) => {
         console.log(data);
@@ -58,34 +52,14 @@ const AdminCreateNewArticle = () => {
   return (
     <>
       <div className={styles["create-user"]}>
-        <h1 className={styles["header"]}>Create New Article</h1>
-        <EditorJs
-          data={data}
-          tools={{
-            header: Header,
-            delimiter: Delimiter,
-            list: {
-              class: List,
-              inlineToolbar: true,
-              config: {
-                defaultStyle: "unordered",
-              },
-            },
-            image: {
-              class: ImageTool,
-              config: {
-                endpoints: {
-                  byFile: "http://localhost:8008/uploadFile", // Your backend file uploader endpoint
-                  byUrl: "http://localhost:8008/fetchUrl", // Your endpoint that provides uploading by Url
-                },
-              },
-            },
-          }}
-          holder="custom-editor-container"
-          onInitialize={handleInitialize}
-        >
-          <div id="custom-editor-container" />
-        </EditorJs>
+        <h1 className={styles["header"]}>Create New Article By Chatgpt</h1>
+        <Input
+          title={"Prompt text"}
+          placeholder={"Enter prompt text"}
+          type={"text"}
+          value={prompt}
+          onChange={(e) => setPrompt(e.target.value)}
+        />
         <div className={styles["add-form"]}>
           <div className={styles["add-info"]}>
             <Input
@@ -124,4 +98,4 @@ const AdminCreateNewArticle = () => {
   );
 };
 
-export default AdminCreateNewArticle;
+export default AdminCreateArticleByChatgpt;

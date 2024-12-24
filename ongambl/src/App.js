@@ -16,6 +16,7 @@ import Profile from "./components/Profile";
 import AdminProfile from "./components/admin/AdminProfile";
 import AdminCreateNewUser from "./components/admin/AdminCreateNewUser";
 import AdminCreateNewArticle from "./components/admin/AdminCreateNewArticle";
+import AdminCreateArticleByChatgpt from "./components/admin/AdminCreateArticleByChatgpt";
 import { setCsrfToken } from "./components/redux/slices/csrfTokenSlice";
 import {
   setJwtToken,
@@ -125,6 +126,10 @@ function App() {
             <Route
               path={"create-new-article"}
               element={<AdminCreateNewArticle />}
+            />
+            <Route
+              path={"create-article-by-chatgpt"}
+              element={<AdminCreateArticleByChatgpt />}
             />
           </Route>
           <Route path={"/login"} element={<Login />} />

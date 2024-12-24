@@ -73,8 +73,8 @@ up_build: build_logger_service build_mail_service build_listener_service
 	docker-compose up --build -d
 	@echo "Docker images built and started!"
 	@echo "Run react frontend"
-	make frontend-install
 	make frontend-run
+
 
 ## up: starts all containers in the background without forcing build
 up:

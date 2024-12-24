@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import styles from "./AdminProfile.module.css";
 import Input from "../form/Input";
 import AdminButton from "../buttons/AdminButton";
@@ -49,36 +49,35 @@ const AdminProfile = () => {
   };
 
   const UpgradePartSubmit = () => {
-      let payload = {
-        article_name: "Hello",
-        request: "Hello",
-      };
+    let payload = {
+      article_name: "Hello",
+      request: "Hello",
+    };
 
-      const requestOptions = {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-CSRF-Token": csrfToken,
-        },
-        credentials: "include",
-        body: JSON.stringify(payload),
-      };
-      console.log(payload);
-      fetch(`http://localhost:4000/create-ai-article`, requestOptions)
-        .then((response) => response.json())
-        .then((data) => {
-          console.log(data);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    
+    const requestOptions = {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRF-Token": csrfToken,
+      },
+      credentials: "include",
+      body: JSON.stringify(payload),
+    };
+    console.log(payload);
+    fetch(`http://localhost:4000/create-ai-article`, requestOptions)
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
   const ProfilePart = () => {
     return (
       <>
-        <Button title={"Start gambling"} onClick={UpgradePartSubmit}/>
+        <Button title={"Start gambling"} onClick={UpgradePartSubmit} />
         <div className={styles["profile"]}>
           <div className={styles["profile-right"]}>
             <img alt="user-img"></img>
@@ -130,6 +129,14 @@ const AdminProfile = () => {
               className={styles["search-btn"]}
               to={`/admin/${hrefName[editFunc]}`}
             />
+            {editFunc === "articles" && (
+              <AdminButton
+                title={`Article By Chatgpt`}
+                active={true}
+                className={styles["search-btn"]}
+                to={`/admin/create-article-by-chatgpt`}
+              />
+            )}
             <Search placeholder={"Search"} />
           </div>
         )}

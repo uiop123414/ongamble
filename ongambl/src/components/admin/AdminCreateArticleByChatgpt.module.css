@@ -1,0 +1,33 @@
+.header {
+  font-style: normal;
+  font-weight: 500;
+  font-size: 62px;
+  line-height: 93px;
+  margin-top: 100px;
+}
+
+.create-user {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.create-user h1 {
+  margin-bottom: 48px;
+}
+
+.add-info {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  padding: 0px;
+  gap: 40px;
+  margin-top: 48px;
+}
+
+.add-form {
+  display: flex;
+  flex-direction: column;
+  margin-left: 120px;
+  margin-right: 120px;
+  gap: 120px;
+  margin-bottom: 120px;
+}

@@ -12,7 +12,7 @@ var LoginUserPayload struct {
 }
 
 var CreateArticlePayload struct {
-	ArticleName string        `json:"article_name"` // TODO - fix in frontend articleName to article_name
+	ArticleName string        `json:"article_name"`
 	Username    string        `json:"username"`
 	Time        string        `json:"time"`
 	Blocks      []interface{} `json:"blocks"`
@@ -23,4 +23,5 @@ var CreateArticlePayload struct {
 var CreateAiArticlePayload struct {
 	ArticleName string `json:"article_name"`
 	Request     string `json:"request"`
+	Type        string `json:"type"`
 }
