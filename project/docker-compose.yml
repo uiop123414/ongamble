@@ -43,6 +43,7 @@ services:
       - kafka-network
       - rabbit-network
       - postgres-network
+      - monitoring
 
   chatgpt-article:
     build:
@@ -156,6 +157,27 @@ services:
       replicas: 1
     networks:
       - rabbit-network
+  
+  prometheus:
+    image: prom/prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    networks:
+      - monitoring
+
+  grafana:
+    image: grafana/grafana
+    ports:
+      - "3000:3000"
+    networks:
+      - monitoring
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    depends_on:
+      - prometheus
 
 networks:
   kafka-network:
@@ -164,3 +186,4 @@ networks:
     driver: bridge
   postgres-network:
     driver: bridge
+  monitoring:

@@ -241,7 +241,7 @@ func (m *PostgresDBRepo) GetUserByToken(tokenScope, tokenPlainText string) (*mod
 	}
 
 	tx.Commit()
-	
+
 	return &user, nil
 }
 
